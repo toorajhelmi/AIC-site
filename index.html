@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Self-Disclosure Pathways Prototype v4</title>
+<style>
+:root{--bg:#fff;--text:#111827;--muted:#6b7280;--line:#d1d5db;--panel:#f9fafb;--accent:#2563eb;--support:#059669;--inhibit:#dc2626;--highlight:#f59e0b;--composite:#0f766e;--topbar-height:120px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:var(--bg)}
+.topbar{border-bottom:1px solid var(--line);padding:14px 220px 10px 16px;background:#fff;position:relative;z-index:2}
+.topbar h1{margin:0 0 6px 0;font-size:18px}
+.sub{color:var(--muted);font-size:12px;line-height:1.4;margin-bottom:10px}
+.composites{display:flex;gap:8px;flex-wrap:wrap}
+.topbar-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:absolute;top:14px;right:16px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--composite)}
+.chip.active{border-color:var(--composite);color:var(--composite);box-shadow:0 0 0 2px rgba(15,118,110,.12);font-weight:700}
+.app{display:grid;grid-template-columns:1.35fr 1fr 1.2fr 1fr;height:calc(100vh - var(--topbar-height));position:relative;z-index:1}
+.panel{border-right:1px solid var(--line);overflow:auto;padding:16px 14px;background:#fff}
+.panel:last-child{border-right:none;background:var(--panel)}
+h2{font-size:15px;margin:0 0 8px 0}
+.group{margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+.group-title{font-size:13px;font-weight:700;margin-bottom:8px}
+.node{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 10px;margin:6px 0;cursor:pointer;font-size:13px}
+.node:hover{border-color:var(--accent)}
+.node.dimmed{opacity:.22}
+.node.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(37,99,235,.12);font-weight:700;background:#eff6ff}
+.node.x-profile{border-color:var(--composite);background:#ecfeff}
+.node.x-active{border-color:var(--highlight);background:#fffbeb}
+.node.m-active{border-color:#8b5cf6;background:#f5f3ff}
+.node.y-candidate-supportive{border-color:var(--support);background:#ecfdf5}
+.node.y-candidate-inhibitory{border-color:var(--inhibit);background:#fef2f2}
+.node.y-candidate-strong{box-shadow:0 0 0 2px rgba(5,150,105,.12)}
+.node.y-candidate-inhibitory.y-candidate-strong{box-shadow:0 0 0 2px rgba(220,38,38,.12)}
+.node-stack{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.node-label{display:block}
+.node-meta{font-size:11px;color:var(--muted);line-height:1.25}
+.nested{margin:8px 0 10px}
+.nested-label{font-size:12px;font-weight:700;color:#374151;margin-bottom:6px}
+.nested-options{display:flex;gap:6px;flex-wrap:wrap}
+.nested-items{display:block;padding-left:8px}
+.nested-items .node{margin:4px 0}
+.nested-chip{border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:12px;background:#fff}
+.nested-chip.dimmed{opacity:.22}
+.nested-chip.x-profile{border-color:var(--composite);background:#ecfeff}
+.nested-chip.x-active{border-color:var(--highlight);background:#fffbeb}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.clear-btn{border:1px solid var(--line);background:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px}
+.toggle{font-size:12px;color:var(--muted)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.swatch{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:5px}
+.sw-support{background:var(--support)}
+.sw-inhibit{background:linear-gradient(to right,var(--inhibit) 60%,transparent 60%);background-size:8px 3px}
+.sw-profile{background:var(--composite)}
+#flowWrap{position:fixed;inset:var(--topbar-height) 0 0 0;pointer-events:none;z-index:0}
+#svg{width:100%;height:100%}
+.rule{border:1px solid var(--line);border-left:5px solid var(--support);border-radius:8px;padding:10px;margin:10px 0;background:#fff}
+.rule.inhibitory{border-left-color:var(--inhibit)}
+.meta,.small,.note,.empty{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-right:6px;margin-bottom:4px;background:#fff}
+.empty{line-height:1.5;margin-top:8px}
+.note{margin-top:10px;line-height:1.4}
+.validation{margin-top:10px;padding:8px 10px;border:1px solid #fbbf24;border-radius:8px;background:#fffbeb;font-size:12px;color:#92400e}
+.validation ul{margin:6px 0 0 18px;padding:0}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>Self-Disclosure Pathways</h1>
+  <div class="sub">Select a profile to infer reverse disclosure candidates. Select a disclosure leaf to inspect forward X -&gt; M -&gt; Y pathways.</div>
+  <div class="composites" id="compositeBar"></div>
+  <div class="topbar-tools">
+    <button class="clear-btn" id="clearProfileBtn">Clear profile</button>
+    <button class="clear-btn" id="clearAllBtn">Clear all</button>
+  </div>
+  <div id="validationNotice" class="validation" hidden></div>
+</div>
+
+<div class="app">
+  <div class="panel">
+    <h2>Conditions & Antecedents (X)</h2>
+    <div class="sub">Composite values appear in teal. Values used by matched pathways appear in amber.</div>
+    <div id="xGroups"></div>
+  </div>
+  <div class="panel">
+    <h2>Mediating Mechanisms (M)</h2>
+    <div class="sub">Mechanisms used by matched forward or reverse rules are highlighted.</div>
+    <div id="mGroups"></div>
+  </div>
+  <div class="panel">
+    <h2>Disclosure Dimensions</h2>
+    <div class="toolbar">
+      <label class="toggle"><input type="checkbox" id="showInhibitors" checked> show inhibitory</label>
+    </div>
+    <div id="yGroups"></div>
+    <div class="legend">
+      <div><span class="swatch sw-profile"></span>in selected composite</div>
+      <div><span class="swatch sw-support"></span>supportive / reverse candidate</div>
+      <div><span class="swatch sw-inhibit"></span>inhibitory</div>
+    </div>
+    <div class="note">Profile-only selection uses reverse X -&gt; M -&gt; Y rules. Profiles only contribute preset X values. You can select one Y item per group or subgroup.</div>
+  </div>
+  <div class="panel">
+    <h2>Details</h2>
+    <div id="detailsContent" class="empty">Select a composite context or a disclosure leaf.</div>
+  </div>
+</div>
+
+<div id="flowWrap"><svg id="svg"></svg></div>
+
+<script>
+const DATA_URL = './self_disclosure_pathways_data.json';
+const strengthScores = {low:1, moderate:2, high:3};
+
+let data = null;
+let validationIssues = [];
+let selectedProfile = null;
+let selectedYByGroup = {};
+
+const showInhibitorsEl = document.getElementById('showInhibitors');
+
+function getYDisplayLabel(value){
+  const parts = value.split(' > ');
+  return parts[parts.length - 1];
+}
+function setYNodeContent(node, label, meta = ''){
+  node.innerHTML = meta
+    ? `<span class="node-stack"><span class="node-label">${label}</span><span class="node-meta">${meta}</span></span>`
+    : `<span class="node-stack"><span class="node-label">${label}</span></span>`;
+}
+function syncLayout(){
+  const topbar = document.querySelector('.topbar');
+  document.documentElement.style.setProperty('--topbar-height', `${Math.ceil(topbar.getBoundingClientRect().height)}px`);
+}
+function renderCompositeBar(){
+  const root = document.getElementById('compositeBar');
+  root.innerHTML = '';
+  Object.keys(data.profiles).forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.dataset.value = name;
+    btn.textContent = name;
+    btn.onclick = () => { selectedProfile = selectedProfile === name ? null : name; update(); };
+    root.appendChild(btn);
+  });
+}
+function createYNode(value, selectionGroup){
+  const button = document.createElement('button');
+  button.className = 'node';
+  button.dataset.kind = 'y';
+  button.dataset.value = value;
+  button.dataset.selectionGroup = selectionGroup;
+  button.dataset.label = getYDisplayLabel(value);
+  setYNodeContent(button, button.dataset.label);
+  button.onclick = () => {
+    const nextSelections = {...selectedYByGroup};
+    if(nextSelections[selectionGroup] === value) delete nextSelections[selectionGroup];
+    else nextSelections[selectionGroup] = value;
+    selectedYByGroup = nextSelections;
+    update();
+  };
+  return button;
+}
+function renderGroups(containerId, groups, kind){
+  const root = document.getElementById(containerId);
+  root.innerHTML = '';
+  Object.entries(groups).forEach(([group, entries]) => {
+    const g = document.createElement('div');
+    g.className = 'group';
+    g.innerHTML = `<div class="group-title">${group}</div>`;
+    entries.forEach(entry => {
+      if(typeof entry === 'string'){
+        if(kind === 'y'){
+          g.appendChild(createYNode(entry, group));
+        } else {
+          const b = document.createElement('div');
+          b.className = 'node';
+          b.dataset.kind = kind;
+          b.dataset.value = entry;
+          b.textContent = entry;
+          g.appendChild(b);
+        }
+      } else if(entry.type === 'flat'){
+        entry.items.forEach(item => {
+          const b = document.createElement('div');
+          b.className = 'node';
+          b.dataset.kind = kind;
+          b.dataset.value = item;
+          b.textContent = item;
+          g.appendChild(b);
+        });
+      } else if(entry.type === 'levels'){
+        const wrap = document.createElement('div');
+        wrap.className = 'nested';
+        wrap.innerHTML = `<div class="nested-label">${entry.label}</div>`;
+        const opts = document.createElement('div');
+        opts.className = 'nested-options';
+        entry.items.forEach(item => {
+          const span = document.createElement('div');
+          span.className = 'nested-chip';
+          span.dataset.kind = kind;
+          span.dataset.value = item;
+          span.textContent = item.split(': ')[1];
+          opts.appendChild(span);
+        });
+        wrap.appendChild(opts);
+        g.appendChild(wrap);
+      } else if(entry.type === 'group' && kind === 'y'){
+        const wrap = document.createElement('div');
+        wrap.className = 'nested';
+        wrap.innerHTML = `<div class="nested-label">${entry.label}</div>`;
+        const items = document.createElement('div');
+        items.className = 'nested-items';
+        entry.items.forEach(item => items.appendChild(createYNode(item, `${group}::${entry.label}`)));
+        wrap.appendChild(items);
+        g.appendChild(wrap);
+      }
+    });
+    root.appendChild(g);
+  });
+}
+function xNodes(){ return [...document.querySelectorAll('[data-kind="x"]')]; }
+function mNodes(){ return [...document.querySelectorAll('.node[data-kind="m"]')]; }
+function yNodes(){ return [...document.querySelectorAll('.node[data-kind="y"]')]; }
+function yNode(value){ return yNodes().find(node => node.dataset.value === value); }
+function selectedProfileValues(){ return selectedProfile ? data.profiles[selectedProfile] : []; }
+function selectedProfileSet(){ return new Set(selectedProfileValues()); }
+function selectedYValues(){ return Object.values(selectedYByGroup); }
+function visibleRules(rules){ return showInhibitorsEl.checked ? rules : rules.filter(rule => rule.type !== 'inhibitory'); }
+function matchesSelectedProfile(rule, profile){ return rule.x.every(value => profile.has(value)); }
+function activeForwardRules(){
+  const selectedYs = selectedYValues();
+  if(!selectedYs.length) return [];
+  const selectedYSet = new Set(selectedYs);
+  return visibleRules(data.forward_rules).filter(rule => selectedYSet.has(rule.target_y));
+}
+function activeReverseRules(){
+  if(!selectedProfile) return [];
+  const profile = selectedProfileSet();
+  let rules = visibleRules(data.reverse_rules).filter(rule => matchesSelectedProfile(rule, profile));
+  const selectedYs = selectedYValues();
+  if(selectedYs.length){
+    const selectedYSet = new Set(selectedYs);
+    rules = rules.filter(rule => selectedYSet.has(rule.target_y));
+  }
+  return rules;
+}
+function strengthScore(strength){ return strengthScores[strength] || 1; }
+function aggregateReverseRules(rules){
+  const map = new Map();
+  rules.forEach(rule => {
+    const signedScore = strengthScore(rule.strength) * (rule.type === 'inhibitory' ? -1 : 1);
+    if(!map.has(rule.target_y)){
+      map.set(rule.target_y, {
+        target_y: rule.target_y,
+        rules: [],
+        totalCount: 0,
+        supportiveCount: 0,
+        inhibitoryCount: 0,
+        supportScore: 0,
+        inhibitScore: 0,
+        netScore: 0,
+        maxStrength: 'low',
+        maxStrengthScore: 0,
+        mediators: new Set(),
+        xValues: new Set()
+      });
+    }
+    const summary = map.get(rule.target_y);
+    summary.rules.push(rule);
+    summary.totalCount += 1;
+    summary.netScore += signedScore;
+    if(rule.type === 'inhibitory'){
+      summary.inhibitoryCount += 1;
+      summary.inhibitScore += strengthScore(rule.strength);
+    } else {
+      summary.supportiveCount += 1;
+      summary.supportScore += strengthScore(rule.strength);
+    }
+    const currentStrength = strengthScore(rule.strength);
+    if(currentStrength > summary.maxStrengthScore){
+      summary.maxStrengthScore = currentStrength;
+      summary.maxStrength = rule.strength;
+    }
+    rule.x.forEach(value => summary.xValues.add(value));
+    rule.m.forEach(value => summary.mediators.add(value));
+  });
+  return [...map.values()]
+    .map(summary => ({
+      ...summary,
+      xValues: [...summary.xValues],
+      mediators: [...summary.mediators],
+      dominantType: summary.netScore < 0 ? 'inhibitory' : 'supportive'
+    }))
+    .sort((a, b) => {
+      if(a.dominantType !== b.dominantType) return a.dominantType === 'supportive' ? -1 : 1;
+      if(Math.abs(a.netScore) !== Math.abs(b.netScore)) return Math.abs(b.netScore) - Math.abs(a.netScore);
+      if(a.totalCount !== b.totalCount) return b.totalCount - a.totalCount;
+      return b.maxStrengthScore - a.maxStrengthScore;
+    });
+}
+function reverseMeta(summary){
+  const parts = [
+    `${summary.totalCount} rule${summary.totalCount === 1 ? '' : 's'}`,
+    `sup ${summary.supportScore}`,
+    `inh ${summary.inhibitScore}`,
+    `net ${summary.netScore > 0 ? '+' : ''}${summary.netScore}`
+  ];
+  return parts.join(' • ');
+}
+function updateNodeStates(forwardRules, reverseRules, reverseSummary){
+  const profile = selectedProfileSet();
+  const selectedYs = selectedYValues();
+  const selectedYSet = new Set(selectedYs);
+  const hasSelection = Boolean(selectedProfile || selectedYs.length);
+  const activeX = new Set();
+  const activeM = new Set();
+  const primaryRules = selectedYs.length ? forwardRules : reverseRules;
+  primaryRules.forEach(rule => {
+    rule.x.forEach(value => activeX.add(value));
+    rule.m.forEach(value => activeM.add(value));
+  });
+  const reverseMap = new Map((selectedYs.length ? [] : reverseSummary).map(summary => [summary.target_y, summary]));
+  document.querySelectorAll('.chip').forEach(chip => chip.classList.toggle('active', chip.dataset.value === selectedProfile));
+  xNodes().forEach(node => {
+    node.classList.remove('x-profile','x-active','dimmed');
+    if(hasSelection) node.classList.add('dimmed');
+    if(profile.has(node.dataset.value)){
+      node.classList.remove('dimmed');
+      node.classList.add('x-profile');
+    }
+    if(activeX.has(node.dataset.value)){
+      node.classList.remove('dimmed');
+      node.classList.add('x-active');
+    }
+    if(!hasSelection) node.classList.remove('dimmed');
+  });
+  mNodes().forEach(node => {
+    node.classList.remove('m-active','dimmed');
+    if(hasSelection) node.classList.add('dimmed');
+    if(activeM.has(node.dataset.value)){
+      node.classList.remove('dimmed');
+      node.classList.add('m-active');
+    }
+    if(!hasSelection) node.classList.remove('dimmed');
+  });
+  yNodes().forEach(node => {
+    node.classList.remove('active','dimmed','y-candidate-supportive','y-candidate-inhibitory','y-candidate-strong');
+    const summary = reverseMap.get(node.dataset.value);
+    setYNodeContent(node, node.dataset.label, summary ? reverseMeta(summary) : '');
+    if(hasSelection) node.classList.add('dimmed');
+    if(summary){
+      node.classList.remove('dimmed');
+      node.classList.add(summary.dominantType === 'inhibitory' ? 'y-candidate-inhibitory' : 'y-candidate-supportive');
+      if(summary.totalCount > 1 || summary.maxStrengthScore >= 3) node.classList.add('y-candidate-strong');
+    }
+    if(selectedYSet.has(node.dataset.value)){
+      node.classList.remove('dimmed');
+      node.classList.add('active');
+    }
+    if(!hasSelection) node.classList.remove('dimmed');
+  });
+}
+function wrapRect(){
+  const rect = document.getElementById('flowWrap').getBoundingClientRect();
+  return {left:rect.left + window.scrollX, top:rect.top + window.scrollY, width:rect.width, height:rect.height};
+}
+function nodeCenter(el){
+  const rect = el.getBoundingClientRect();
+  return {x:rect.left + rect.width / 2 + window.scrollX, y:rect.top + rect.height / 2 + window.scrollY};
+}
+function strengthWidth(strength){ return strength === 'high' ? 4 : (strength === 'moderate' ? 2.8 : 1.8); }
+function makeEdge(svg, fromEl, toEl, type, strength){
+  const wrap = wrapRect();
+  const start = nodeCenter(fromEl);
+  const end = nodeCenter(toEl);
+  const x1 = start.x - wrap.left;
+  const y1 = start.y - wrap.top;
+  const x2 = end.x - wrap.left;
+  const y2 = end.y - wrap.top;
+  const dx = (x2 - x1) * .35;
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d', `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke', type === 'supportive'
+    ? getComputedStyle(document.documentElement).getPropertyValue('--support').trim()
+    : getComputedStyle(document.documentElement).getPropertyValue('--inhibit').trim());
+  path.setAttribute('stroke-width', strengthWidth(strength));
+  path.setAttribute('stroke-linecap','round');
+  if(type === 'inhibitory') path.setAttribute('stroke-dasharray','8 6');
+  svg.appendChild(path);
+}
+function renderEdges(forwardRules, reverseRules){
+  const svg = document.getElementById('svg');
+  const wrap = wrapRect();
+  svg.setAttribute('viewBox', `0 0 ${wrap.width} ${wrap.height}`);
+  svg.innerHTML = '';
+  const rules = selectedYValues().length ? forwardRules : reverseRules;
+  if(!rules.length) return;
+  rules.forEach(rule => {
+    const target = yNode(rule.target_y);
+    if(!target) return;
+    const xEls = rule.x.map(value => xNodes().find(node => node.dataset.value === value)).filter(Boolean);
+    const mEls = rule.m.map(value => mNodes().find(node => node.dataset.value === value)).filter(Boolean);
+    xEls.forEach(xEl => mEls.forEach(mEl => makeEdge(svg, xEl, mEl, rule.type, rule.strength)));
+    mEls.forEach(mEl => makeEdge(svg, mEl, target, rule.type, rule.strength));
+  });
+}
+function ruleCard(rule){
+  return `<div class="rule ${rule.type === 'inhibitory' ? 'inhibitory' : ''}">
+    <div class="meta"><strong>${rule.rule_id}</strong> • ${rule.type} • strength: ${rule.strength}</div>
+    <div><span class="badge">X: ${rule.x.join(', ')}</span></div>
+    <div style="margin-top:6px;"><span class="badge">M: ${rule.m.join(', ')}</span></div>
+    <div style="margin-top:8px;font-size:13px;line-height:1.45;">${rule.rationale}</div>
+  </div>`;
+}
+function reverseSummaryCard(summary){
+  const balance = summary.supportiveCount && summary.inhibitoryCount
+    ? `${summary.supportiveCount} supportive / ${summary.inhibitoryCount} inhibitory`
+    : (summary.inhibitoryCount ? `${summary.inhibitoryCount} inhibitory` : `${summary.supportiveCount} supportive`);
+  return `<div class="rule ${summary.dominantType === 'inhibitory' ? 'inhibitory' : ''}">
+    <div class="meta"><strong>${summary.target_y}</strong> • ${summary.totalCount} reverse rule(s) • strongest: ${summary.maxStrength}</div>
+    <div><span class="badge">${balance}</span><span class="badge">support ${summary.supportScore}</span><span class="badge">inhibit ${summary.inhibitScore}</span><span class="badge">net ${summary.netScore > 0 ? '+' : ''}${summary.netScore}</span></div>
+    <div style="margin-top:6px;">${summary.xValues.map(value => `<span class="badge">X: ${value}</span>`).join('')}</div>
+    <div style="margin-top:6px;">${summary.mediators.map(value => `<span class="badge">M: ${value}</span>`).join('')}</div>
+  </div>`;
+}
+function renderDetails(forwardRules, reverseRules, reverseSummary){
+  const root = document.getElementById('detailsContent');
+  const selectedYs = selectedYValues();
+  if(!selectedProfile && !selectedYs.length){
+    root.className = 'empty';
+    root.innerHTML = 'Select a profile context or one or more disclosure dimensions.';
+    return;
+  }
+  let html = '';
+  if(selectedProfile){
+    const values = selectedProfileValues();
+    html += `<h3>${selectedProfile}</h3><div class="small">Profile X values: ${values.length}</div><div style="margin:8px 0 12px 0;">${values.map(value => `<span class="badge">${value}</span>`).join('')}</div>`;
+  }
+  if(selectedYs.length){
+    selectedYs.forEach(value => {
+      const targetForwardRules = forwardRules.filter(rule => rule.target_y === value);
+      const targetReverseRules = reverseRules.filter(rule => rule.target_y === value);
+      html += `<h3>${value}</h3><div class="small">${targetForwardRules.length} matching forward rule(s)</div>`;
+      const supportive = targetForwardRules.filter(rule => rule.type === 'supportive');
+      const inhibitory = targetForwardRules.filter(rule => rule.type === 'inhibitory');
+      if(supportive.length) html += `<h3>Forward pathways</h3>${supportive.map(ruleCard).join('')}`;
+      if(inhibitory.length) html += `<h3>Forward inhibitory pathways</h3>${inhibitory.map(ruleCard).join('')}`;
+      if(!targetForwardRules.length) html += `<div class="empty">No forward rules are currently defined for this disclosure dimension.</div>`;
+      if(selectedProfile){
+        html += `<h3>Reverse pathways for this dimension</h3><div class="small">${targetReverseRules.length} matching reverse rule(s)</div>`;
+        if(targetReverseRules.length) html += targetReverseRules.map(ruleCard).join('');
+        else html += `<div class="empty">No reverse X -&gt; M -&gt; Y rules currently match this profile for the selected dimension.</div>`;
+      }
+    });
+  } else if(selectedProfile){
+    html += `<h3>Candidate disclosure dimensions</h3><div class="small">${reverseSummary.length} grouped reverse outcome(s)</div>`;
+    if(reverseSummary.length) html += reverseSummary.map(reverseSummaryCard).join('');
+    else html += `<div class="empty">No reverse X -&gt; M -&gt; Y rules currently match this profile.</div>`;
+  }
+  root.className = '';
+  root.innerHTML = html;
+}
+function flattenGroupValues(groups){
+  const values = [];
+  Object.values(groups).forEach(entries => {
+    entries.forEach(entry => {
+      if(typeof entry === 'string') values.push(entry);
+      else if(entry && Array.isArray(entry.items)){
+        entry.items.forEach(item => {
+          if(typeof item === 'string') values.push(item);
+          else if(item && Array.isArray(item.items)) values.push(...item.items);
+        });
+      }
+    });
+  });
+  return values;
+}
+function validateRuleSet(label, rules, knownX, knownM, knownY){
+  const issues = [];
+  rules.forEach(rule => {
+    const id = rule.rule_id || '(missing id)';
+    if(!knownY.has(rule.target_y)) issues.push(`${label} ${id} references unknown Y "${rule.target_y}".`);
+    if(!Array.isArray(rule.x) || !rule.x.length) issues.push(`${label} ${id} is missing its X antecedents.`);
+    else rule.x.forEach(value => { if(!knownX.has(value)) issues.push(`${label} ${id} references unknown X "${value}".`); });
+    if(!Array.isArray(rule.m) || !rule.m.length) issues.push(`${label} ${id} is missing mediators.`);
+    else rule.m.forEach(value => { if(!knownM.has(value)) issues.push(`${label} ${id} references unknown M "${value}".`); });
+  });
+  return issues;
+}
+function validateData(){
+  const knownX = new Set(flattenGroupValues(data.x_groups));
+  const knownM = new Set(Object.values(data.m_groups).flat());
+  const knownY = new Set(flattenGroupValues(data.y_groups));
+  const issues = [];
+  Object.entries(data.profiles).forEach(([name, values]) => {
+    values.forEach(value => { if(!knownX.has(value)) issues.push(`Profile "${name}" references unknown X "${value}".`); });
+  });
+  issues.push(...validateRuleSet('Forward', data.forward_rules, knownX, knownM, knownY));
+  issues.push(...validateRuleSet('Reverse', data.reverse_rules, knownX, knownM, knownY));
+  return issues;
+}
+function renderValidationNotice(){
+  const el = document.getElementById('validationNotice');
+  if(!validationIssues.length){
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = `<strong>Data validation warnings:</strong><ul>${validationIssues.slice(0, 5).map(issue => `<li>${issue}</li>`).join('')}</ul>${validationIssues.length > 5 ? `<div class="small">${validationIssues.length - 5} more warning(s) logged in the console.</div>` : ''}`;
+  validationIssues.forEach(issue => console.warn('[prototype validation]', issue));
+}
+function renderLoadError(error){
+  console.error('[prototype load error]', error);
+  const root = document.getElementById('detailsContent');
+  root.className = 'empty';
+  root.innerHTML = 'Failed to load the external prototype data file. Open the prototype through the local server so the JSON can be fetched.';
+  const notice = document.getElementById('validationNotice');
+  notice.hidden = false;
+  notice.innerHTML = `<strong>Load error:</strong> ${error.message}`;
+}
+function update(){
+  if(!data){
+    syncLayout();
+    return;
+  }
+  syncLayout();
+  const forwardRules = activeForwardRules();
+  const reverseRules = activeReverseRules();
+  const reverseSummary = selectedYValues().length ? [] : aggregateReverseRules(reverseRules);
+  updateNodeStates(forwardRules, reverseRules, reverseSummary);
+  renderDetails(forwardRules, reverseRules, reverseSummary);
+  renderEdges(forwardRules, reverseRules);
+}
+async function init(){
+  syncLayout();
+  try{
+    const response = await fetch(DATA_URL, {cache:'no-store'});
+    if(!response.ok) throw new Error(`HTTP ${response.status} while loading ${DATA_URL}`);
+    data = await response.json();
+    validationIssues = validateData();
+    renderCompositeBar();
+    renderGroups('xGroups', data.x_groups, 'x');
+    renderGroups('mGroups', data.m_groups, 'm');
+    renderGroups('yGroups', data.y_groups, 'y');
+    renderValidationNotice();
+    update();
+  } catch(error){
+    renderLoadError(error);
+  }
+}
+
+document.getElementById('clearProfileBtn').onclick = () => { selectedProfile = null; update(); };
+document.getElementById('clearAllBtn').onclick = () => { selectedProfile = null; selectedYByGroup = {}; update(); };
+showInhibitorsEl.onchange = update;
+window.addEventListener('resize', update);
+init();
+</script>
+</body>
+</html>
