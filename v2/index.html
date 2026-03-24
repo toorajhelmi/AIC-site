@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Self-Disclosure Pathways Prototype v2</title>
+<style>
+:root{
+  --bg:#f8fafc;
+  --panel:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#dbe4ee;
+  --accent:#1d4ed8;
+  --accent-soft:#dbeafe;
+  --preset:#0f766e;
+  --preset-soft:#ccfbf1;
+  --support-strong:#166534;
+  --support-weak:#16a34a;
+  --neutral:#64748b;
+  --inhibit-weak:#f97316;
+  --inhibit-strong:#dc2626;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(248,250,252,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:16px 18px 14px}
+.title-row{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+h1{margin:0;font-size:20px}
+.sub{margin-top:6px;font-size:13px;line-height:1.45;color:var(--muted);max-width:980px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.control-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mode-group,.stage-chips{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.profiles{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip,.btn,.x-node,.dimension-node{
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:10px;
+}
+.chip,.btn{padding:8px 12px;font-size:12px;cursor:pointer}
+.chip.active{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.chip[disabled],.btn[disabled]{opacity:.5;cursor:not-allowed;background:#f8fafc}
+.btn:hover,.chip:hover,.x-node:hover,.dimension-node:hover{border-color:var(--accent)}
+select{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--panel);
+  color:var(--text);
+  padding:8px 10px;
+  font-size:12px;
+}
+.notice{
+  margin-top:12px;
+  border:1px solid #fbbf24;
+  background:#fffbeb;
+  color:#92400e;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:12px;
+}
+.app{
+  display:grid;
+  grid-template-columns:minmax(320px,1.1fr) minmax(360px,1fr) minmax(320px,.9fr);
+  gap:16px;
+  padding:16px 18px 22px;
+  align-items:start;
+}
+.app.comparison-mode{
+  grid-template-columns:minmax(620px,1.35fr) minmax(340px,.95fr);
+}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  min-height:calc(100vh - 158px);
+  overflow:auto;
+}
+.panel.hidden{display:none}
+.panel h2{margin:0 0 6px 0;font-size:16px}
+.panel-sub{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.count{font-size:12px;color:var(--muted)}
+.group{border:1px solid var(--line);border-radius:12px;padding:10px;margin:0 0 12px 0}
+.group-title{font-size:13px;font-weight:700;margin-bottom:8px}
+.x-list,.dimension-list{display:flex;flex-direction:column;gap:6px}
+.x-node,.dimension-node{
+  width:100%;
+  text-align:left;
+  padding:9px 10px;
+  cursor:pointer;
+}
+.x-node.active{
+  border-color:var(--accent);
+  background:var(--accent-soft);
+  box-shadow:0 0 0 1px rgba(29,78,216,.12);
+}
+.x-node.preset{border-color:var(--preset)}
+.x-node.disabled{cursor:default;opacity:.92}
+.node-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.node-main{display:flex;flex-direction:column;gap:4px;min-width:0}
+.node-label{font-size:13px;line-height:1.35}
+.node-meta{font-size:11px;color:var(--muted);line-height:1.3}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:2px 8px;
+  font-size:11px;
+  background:#fff;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.badge.support-H{border-color:var(--preset);background:var(--preset-soft);color:var(--preset)}
+.badge.support-M{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8}
+.dimension-node.selected{box-shadow:0 0 0 2px rgba(29,78,216,.14)}
+.dimension-node.bucket-strong-supportive{border-color:var(--support-strong);background:#ecfdf5}
+.dimension-node.bucket-weak-supportive{border-color:var(--support-weak);background:#f0fdf4}
+.dimension-node.bucket-neutral{border-color:var(--line);background:#fff}
+.dimension-node.bucket-weak-inhibitory{border-color:var(--inhibit-weak);background:#fff7ed}
+.dimension-node.bucket-strong-inhibitory{border-color:var(--inhibit-strong);background:#fef2f2}
+.summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.summary-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.summary-card strong{display:block;font-size:12px;margin-bottom:4px}
+.summary-card span{font-size:14px}
+.section-title{font-size:13px;font-weight:700;margin:14px 0 8px}
+.stack{display:flex;flex-direction:column;gap:8px}
+.rule-card{
+  border:1px solid var(--line);
+  border-left:4px solid var(--accent);
+  border-radius:12px;
+  padding:10px;
+  background:#fff;
+}
+.rule-card h3{margin:0 0 6px 0;font-size:13px}
+.rule-meta{font-size:11px;color:var(--muted);line-height:1.35;margin-bottom:8px}
+.rule-text{font-size:12px;line-height:1.45}
+.pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.empty{font-size:12px;color:var(--muted);line-height:1.5}
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+.comparison-chart-shell{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px}
+.comparison-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.comparison-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.comparison-swatch{width:12px;height:12px;border-radius:999px;display:inline-block}
+.comparison-chart-scroll{overflow-x:auto;padding-bottom:6px}
+.comparison-chart-svg{display:block}
+.comparison-axis{font-size:11px;fill:var(--muted)}
+.comparison-grid{stroke:#e2e8f0;stroke-width:1}
+.comparison-zero{stroke:#94a3b8;stroke-width:1.5}
+.comparison-line{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+.comparison-dot{stroke:#fff;stroke-width:1.5}
+.comparison-note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.45}
+.comparison-scale-group{display:none;align-items:center;gap:8px}
+.comparison-scale-group.visible{display:flex}
+.stage-comparison-group{display:none;align-items:center;gap:8px;flex-wrap:wrap}
+.stage-comparison-group.visible{display:flex}
+@media (max-width: 1200px){
+  .app{grid-template-columns:1fr}
+  .app.comparison-mode{grid-template-columns:1fr}
+  .panel{min-height:auto}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="title-row">
+    <div>
+      <h1>Self-Disclosure Pathways v2</h1>
+    </div>
+    <div class="controls">
+      <div class="control-group" id="stageFilterGroup">
+        <label for="stageSelect" class="count">Stage</label>
+        <select id="stageSelect"></select>
+      </div>
+      <div class="mode-group" id="viewModeGroup"></div>
+      <div class="comparison-scale-group" id="comparisonScaleGroup" hidden>
+        <label for="comparisonScaleSelect" class="count">Compare</label>
+        <select id="comparisonScaleSelect">
+          <option value="raw">Raw</option>
+          <option value="normalized">Normalized</option>
+        </select>
+      </div>
+      <div class="stage-comparison-group" id="stageComparisonGroup" hidden>
+        <span class="count">Stages</span>
+        <div class="stage-chips" id="stageComparisonChips"></div>
+      </div>
+      <button class="btn" id="clearAllBtn">Clear all</button>
+    </div>
+  </div>
+  <div class="profiles" id="profileBar"></div>
+  <div id="validationNotice" class="notice" hidden></div>
+</div>
+
+<div class="app" id="appRoot">
+  <section class="panel" id="xPanel">
+    <h2>Conditions & Antecedents</h2>
+    <div class="panel-sub" id="xPanelSub">
+      Click any condition to toggle it. When a profile preset is active, `H/M` badges show which conditions came from the evidence-backed profile matrix.
+    </div>
+    <div class="toolbar">
+      <div class="count" id="conditionCount"></div>
+    </div>
+    <div id="xGroups"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Dimensions & Outcomes</h2>
+    <div class="panel-sub" id="dimensionPanelSub">
+      Scores are aggregated from matched literature rules for the selected stage. Buckets are normalized per dimension against the rule library active for that stage.
+    </div>
+    <div class="toolbar">
+      <div class="legend" id="dimensionLegend">
+        <span class="badge">strong supportive</span>
+        <span class="badge">weak supportive</span>
+        <span class="badge">neutral / mixed</span>
+        <span class="badge">weak inhibitory</span>
+        <span class="badge">strong inhibitory</span>
+      </div>
+    </div>
+    <div id="dimensionGroups"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Details</h2>
+    <div id="detailsContent" class="empty">Loading...</div>
+  </section>
+</div>
+
+<script>
+const DATA_URL = './self_disclosure_pathways_data_v2.json';
+
+let data = null;
+let validationIssues = [];
+let selectedProfiles = [];
+let selectedDimension = null;
+let selectedStage = 'developing';
+let selectedX = new Set();
+let selectedComparisonStages = new Set();
+let viewMode = 'single';
+let comparisonScale = 'raw';
+const comparisonColors = ['#2563eb', '#059669', '#dc2626', '#7c3aed', '#ea580c', '#0f766e'];
+const stageComparisonColors = {
+  initiating: '#94a3b8',
+  developing: '#2563eb',
+  established: '#0f766e'
+};
+
+function escapeHtml(value){
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function allXValues(){
+  return Object.values(data.x_groups).flat();
+}
+
+function allDimensions(){
+  return Object.values(data.dimension_groups).flat();
+}
+
+function orderedProfileNames(){
+  return Object.keys(data.profiles);
+}
+
+function dimensionValueLabel(dimension){
+  const parts = dimension.split(' > ');
+  return parts[parts.length - 1];
+}
+
+function comparisonDimensionLabel(dimension){
+  return `${dimensionGroupName(dimension)}: ${dimensionValueLabel(dimension)}`;
+}
+
+function dimensionGroupName(dimension){
+  for(const [group, entries] of Object.entries(data.dimension_groups)){
+    if(entries.includes(dimension)) return group;
+  }
+  return '';
+}
+
+const comparisonCollapsedGroups = new Set([
+  'Disclosure Amount',
+  'Disclosure Breadth',
+  'Disclosure Depth',
+  'Disclosure Intimacy',
+  'Disclosure Honesty',
+  'Disclosure Valence',
+  'Disclosure Style'
+]);
+
+function comparisonAxes(){
+  const axes = [];
+  Object.entries(data.dimension_groups).forEach(([group, entries]) => {
+    if(comparisonCollapsedGroups.has(group) && entries.length === 2){
+      axes.push({
+        id: `pair:${group}`,
+        kind: 'pair',
+        label: entries[0].split(' > ')[0],
+        positiveDimension: entries[0],
+        negativeDimension: entries[1],
+        positiveLabel: dimensionValueLabel(entries[0]),
+        negativeLabel: dimensionValueLabel(entries[1])
+      });
+      return;
+    }
+    entries.forEach(dimension => {
+      axes.push({
+        id: dimension,
+        kind: 'single',
+        label: comparisonDimensionLabel(dimension),
+        dimension,
+        positiveLabel: dimensionValueLabel(dimension),
+        negativeLabel: ''
+      });
+    });
+  });
+  return axes;
+}
+
+function comparisonAxisScore(axis, aggregate){
+  if(axis.kind === 'single') return aggregate.perDimension.get(axis.dimension).rawScore;
+  return aggregate.perDimension.get(axis.positiveDimension).rawScore - aggregate.perDimension.get(axis.negativeDimension).rawScore;
+}
+
+function comparisonAxisDirection(axis, value){
+  if(axis.kind === 'single') return axis.positiveLabel;
+  if(value > 0) return axis.positiveLabel;
+  if(value < 0) return axis.negativeLabel;
+  return 'Neutral / mixed';
+}
+
+function comparisonAxisLegend(axis){
+  if(axis.kind === 'single') return axis.positiveLabel;
+  return `+ ${axis.positiveLabel} | - ${axis.negativeLabel}`;
+}
+
+function formatComparisonValue(value, scale){
+  if(scale === 'normalized') return `${value.toFixed(0)}%`;
+  return `${value > 0 ? '+' : ''}${value}`;
+}
+
+function currentPresetMap(){
+  const profile = singleSelectedProfile();
+  if(!profile) return new Map();
+  return new Map((data.profiles[profile]?.preset || []).map(entry => [entry.x, entry.support]));
+}
+
+function presetEntriesForProfile(name){
+  return data.profiles[name]?.preset || [];
+}
+
+function presetSetForProfile(name){
+  return new Set(presetEntriesForProfile(name).map(entry => entry.x));
+}
+
+function singleSelectedProfile(){
+  return selectedProfiles.length === 1 ? selectedProfiles[0] : null;
+}
+
+function defaultComparisonStages(){
+  return new Set(data?.stages || ['initiating', 'developing', 'established']);
+}
+
+function activeComparisonStages(){
+  return (data?.stages || []).filter(stage => selectedComparisonStages.has(stage));
+}
+
+function isProfileComparisonMode(){
+  return viewMode === 'profiles';
+}
+
+function isStageComparisonMode(){
+  return viewMode === 'stages';
+}
+
+function isComparisonMode(){
+  return isProfileComparisonMode() || isStageComparisonMode();
+}
+
+function comparisonColor(index){
+  return comparisonColors[index % comparisonColors.length];
+}
+
+function stageComparisonColor(stage){
+  return stageComparisonColors[stage] || comparisonColor((data?.stages || []).indexOf(stage));
+}
+
+function setViewMode(nextMode){
+  if(nextMode === 'stages'){
+    if(!singleSelectedProfile()) return;
+    viewMode = 'stages';
+    selectedComparisonStages = defaultComparisonStages();
+    selectedDimension = null;
+    return;
+  }
+  if(nextMode === 'profiles'){
+    if(selectedProfiles.length < 2) return;
+    viewMode = 'profiles';
+    selectedDimension = null;
+    return;
+  }
+  viewMode = 'single';
+  selectedDimension = null;
+}
+
+function setSelectedProfiles(nextProfiles){
+  selectedProfiles = orderedProfileNames().filter(name => nextProfiles.includes(name));
+  selectedDimension = null;
+  if(selectedProfiles.length === 1){
+    selectedX = presetSetForProfile(selectedProfiles[0]);
+  } else if(selectedProfiles.length === 0){
+    selectedX = new Set();
+  }
+  if(selectedProfiles.length > 1){
+    viewMode = 'profiles';
+  } else if(isProfileComparisonMode()){
+    viewMode = 'single';
+  }
+  if(isStageComparisonMode() && selectedProfiles.length > 1){
+    viewMode = 'profiles';
+  }
+  if(isStageComparisonMode() && selectedProfiles.length === 1 && !selectedComparisonStages.size){
+    selectedComparisonStages = defaultComparisonStages();
+  }
+}
+
+function stageLabel(stage){
+  return stage.charAt(0).toUpperCase() + stage.slice(1);
+}
+
+function renderProfiles(){
+  const root = document.getElementById('profileBar');
+  root.innerHTML = '';
+  orderedProfileNames().forEach(name => {
+    const button = document.createElement('button');
+    button.className = `chip${selectedProfiles.includes(name) ? ' active' : ''}`;
+    button.textContent = name;
+    button.onclick = event => {
+      if(event.shiftKey){
+        const next = new Set(selectedProfiles);
+        if(next.has(name)) next.delete(name);
+        else next.add(name);
+        setSelectedProfiles([...next]);
+      } else {
+        setSelectedProfiles([name]);
+      }
+      update();
+    };
+    button.title = 'Click to select. Shift-click to compare.';
+    root.appendChild(button);
+  });
+}
+
+function renderViewModeControls(){
+  const root = document.getElementById('viewModeGroup');
+  const items = [
+    { id: 'single', label: 'Single', disabled: false, title: 'Single profile, single stage view.' },
+    { id: 'profiles', label: 'Compare profiles', disabled: selectedProfiles.length < 2, title: selectedProfiles.length < 2 ? 'Shift-select at least two profiles to compare.' : 'Compare selected profiles at one stage.' },
+    { id: 'stages', label: 'Compare stages', disabled: !singleSelectedProfile(), title: singleSelectedProfile() ? 'Compare one selected profile across stages.' : 'Select exactly one profile to compare across stages.' }
+  ];
+  root.innerHTML = items.map(item => `
+    <button
+      class="chip${viewMode === item.id ? ' active' : ''}"
+      data-view-mode="${item.id}"
+      ${item.disabled ? 'disabled' : ''}
+      title="${escapeHtml(item.title)}"
+    >${escapeHtml(item.label)}</button>
+  `).join('');
+  root.querySelectorAll('[data-view-mode]').forEach(button => {
+    button.onclick = () => {
+      if(button.disabled) return;
+      setViewMode(button.dataset.viewMode);
+      update();
+    };
+  });
+}
+
+function renderStageComparisonChips(){
+  const root = document.getElementById('stageComparisonChips');
+  root.innerHTML = '';
+  (data?.stages || []).forEach(stage => {
+    const button = document.createElement('button');
+    button.className = `chip${selectedComparisonStages.has(stage) ? ' active' : ''}`;
+    button.textContent = stageLabel(stage);
+    button.title = `Toggle ${stageLabel(stage)} in stage comparison.`;
+    button.onclick = () => {
+      if(!isStageComparisonMode()) return;
+      if(selectedComparisonStages.has(stage) && selectedComparisonStages.size === 1) return;
+      if(selectedComparisonStages.has(stage)) selectedComparisonStages.delete(stage);
+      else selectedComparisonStages.add(stage);
+      update();
+    };
+    root.appendChild(button);
+  });
+}
+
+function renderStageSelect(){
+  const select = document.getElementById('stageSelect');
+  select.innerHTML = data.stages.map(stage => `<option value="${escapeHtml(stage)}">${escapeHtml(stageLabel(stage))}</option>`).join('');
+  select.value = selectedStage;
+}
+
+function renderXGroups(){
+  const root = document.getElementById('xGroups');
+  root.innerHTML = '';
+  Object.entries(data.x_groups).forEach(([group, entries]) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'group';
+    wrapper.innerHTML = `<div class="group-title">${escapeHtml(group)}</div>`;
+    const list = document.createElement('div');
+    list.className = 'x-list';
+    entries.forEach(value => {
+      const button = document.createElement('button');
+      button.className = 'x-node';
+      button.dataset.value = value;
+      button.onclick = () => {
+        if(isComparisonMode()) return;
+        if(selectedX.has(value)) selectedX.delete(value);
+        else selectedX.add(value);
+        selectedDimension = null;
+        update();
+      };
+      list.appendChild(button);
+    });
+    wrapper.appendChild(list);
+    root.appendChild(wrapper);
+  });
+}
+
+function updatePanelCopy(){
+  const appRoot = document.getElementById('appRoot');
+  const xPanel = document.getElementById('xPanel');
+  const xSub = document.getElementById('xPanelSub');
+  const dimensionSub = document.getElementById('dimensionPanelSub');
+  const legend = document.getElementById('dimensionLegend');
+  const stageFilterGroup = document.getElementById('stageFilterGroup');
+  const comparisonScaleGroup = document.getElementById('comparisonScaleGroup');
+  const stageComparisonGroup = document.getElementById('stageComparisonGroup');
+  if(isProfileComparisonMode()){
+    appRoot.classList.add('comparison-mode');
+    xPanel.hidden = true;
+    stageFilterGroup.hidden = false;
+    comparisonScaleGroup.hidden = false;
+    comparisonScaleGroup.classList.add('visible');
+    stageComparisonGroup.hidden = true;
+    stageComparisonGroup.classList.remove('visible');
+    xSub.textContent = 'Comparison mode uses each selected profile preset. Manual C&A toggles are disabled until you return to a single profile.';
+    dimensionSub.textContent = comparisonScale === 'raw'
+      ? 'The chart shows raw aggregate rule scores for each selected profile under the current stage filter.'
+      : 'The chart shows profile-normalized scores, so each line emphasizes within-profile shape rather than absolute magnitude.';
+    legend.innerHTML = comparisonScale === 'raw'
+      ? '<span class="badge">raw rule score lines</span><span class="badge">zero baseline included</span>'
+      : '<span class="badge">normalized profile lines</span><span class="badge">scaled to each profile\'s strongest absolute signal</span>';
+  } else if(isStageComparisonMode()){
+    appRoot.classList.add('comparison-mode');
+    xPanel.hidden = true;
+    stageFilterGroup.hidden = true;
+    comparisonScaleGroup.hidden = false;
+    comparisonScaleGroup.classList.add('visible');
+    stageComparisonGroup.hidden = false;
+    stageComparisonGroup.classList.add('visible');
+    xSub.textContent = 'Stage comparison uses the selected profile preset as the fixed condition set. Manual C&A toggles are disabled until you return to single view.';
+    dimensionSub.textContent = comparisonScale === 'raw'
+      ? 'The chart shows raw aggregate rule scores for the selected profile across the chosen stages.'
+      : 'The chart shows stage-normalized scores for the selected profile, so each stage line emphasizes within-stage shape rather than absolute magnitude.';
+    legend.innerHTML = comparisonScale === 'raw'
+      ? '<span class="badge">raw stage score lines</span><span class="badge">one line per selected stage</span>'
+      : '<span class="badge">normalized stage lines</span><span class="badge">scaled to each stage\'s strongest absolute signal</span>';
+  } else {
+    appRoot.classList.remove('comparison-mode');
+    xPanel.hidden = false;
+    stageFilterGroup.hidden = false;
+    comparisonScaleGroup.hidden = true;
+    comparisonScaleGroup.classList.remove('visible');
+    stageComparisonGroup.hidden = true;
+    stageComparisonGroup.classList.remove('visible');
+    xSub.textContent = 'Click any condition to toggle it. When a profile preset is active, H/M badges show which conditions came from the evidence-backed profile matrix.';
+    dimensionSub.textContent = 'Scores are aggregated from matched literature rules for the selected stage. Buckets are normalized per dimension against the rule library active for that stage.';
+    legend.innerHTML = `
+      <span class="badge">strong supportive</span>
+      <span class="badge">weak supportive</span>
+      <span class="badge">neutral / mixed</span>
+      <span class="badge">weak inhibitory</span>
+      <span class="badge">strong inhibitory</span>
+    `;
+  }
+}
+
+function renderValidationNotice(){
+  const el = document.getElementById('validationNotice');
+  if(!validationIssues.length){
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = `<strong>Validation warnings</strong><br>${validationIssues.slice(0, 6).map(issue => escapeHtml(issue)).join('<br>')}`;
+  validationIssues.forEach(issue => console.warn('[prototype v2 validation]', issue));
+}
+
+function validateData(){
+  const issues = [];
+  const knownX = new Set(allXValues());
+  const knownDimensions = new Set(allDimensions());
+  const knownStages = new Set(data.stages);
+
+  Object.entries(data.profiles).forEach(([name, profile]) => {
+    (profile.preset || []).forEach(entry => {
+      if(!knownX.has(entry.x)) issues.push(`Profile "${name}" references unknown X "${entry.x}".`);
+      if(!['H', 'M'].includes(entry.support)) issues.push(`Profile "${name}" has invalid support label for "${entry.x}".`);
+    });
+  });
+
+  (data.rules || []).forEach(rule => {
+    if(!rule.id) issues.push('A rule is missing its id.');
+    if(!Array.isArray(rule.antecedents) || !rule.antecedents.length) issues.push(`Rule "${rule.id || '(missing id)'}" has no antecedents.`);
+    else rule.antecedents.forEach(value => {
+      if(!knownX.has(value)) issues.push(`Rule "${rule.id}" references unknown X "${value}".`);
+    });
+    if(!Array.isArray(rule.stages) || !rule.stages.length) issues.push(`Rule "${rule.id}" has no stage tags.`);
+    else rule.stages.forEach(stage => {
+      if(!knownStages.has(stage)) issues.push(`Rule "${rule.id}" references unknown stage "${stage}".`);
+    });
+    if(!Array.isArray(rule.effects) || !rule.effects.length) issues.push(`Rule "${rule.id}" has no dimension effects.`);
+    else rule.effects.forEach(effect => {
+      if(!knownDimensions.has(effect.dimension)) issues.push(`Rule "${rule.id}" references unknown dimension "${effect.dimension}".`);
+      if(typeof effect.weight !== 'number' || Number.isNaN(effect.weight)) issues.push(`Rule "${rule.id}" has invalid weight for "${effect.dimension}".`);
+    });
+  });
+
+  return issues;
+}
+
+function activeStageRulesForStage(stage){
+  return data.rules.filter(rule => rule.stages.includes(stage));
+}
+
+function activeStageRules(){
+  return activeStageRulesForStage(selectedStage);
+}
+
+function matchedRulesForXSetAtStage(xSet, stage){
+  return activeStageRulesForStage(stage).filter(rule => rule.antecedents.every(value => xSet.has(value)));
+}
+
+function matchedRulesForXSet(xSet){
+  return matchedRulesForXSetAtStage(xSet, selectedStage);
+}
+
+function matchedRules(){
+  return matchedRulesForXSet(selectedX);
+}
+
+function normalizationLookup(stageRules){
+  const lookup = new Map();
+  allDimensions().forEach(dimension => {
+    lookup.set(dimension, { positive: 0, negative: 0 });
+  });
+  stageRules.forEach(rule => {
+    rule.effects.forEach(effect => {
+      const item = lookup.get(effect.dimension);
+      if(effect.weight >= 0) item.positive = Math.max(item.positive, effect.weight);
+      else item.negative = Math.max(item.negative, Math.abs(effect.weight));
+    });
+  });
+  return lookup;
+}
+
+function normalizedScore(rawScore, totals){
+  if(rawScore > 0) return totals.positive ? rawScore / totals.positive : 0;
+  if(rawScore < 0) return totals.negative ? rawScore / totals.negative : 0;
+  return 0;
+}
+
+function scoreBucket(score){
+  if(score >= 0.55) return { key: 'strong-supportive', label: 'strong supportive' };
+  if(score >= 0.15) return { key: 'weak-supportive', label: 'weak supportive' };
+  if(score <= -0.55) return { key: 'strong-inhibitory', label: 'strong inhibitory' };
+  if(score <= -0.15) return { key: 'weak-inhibitory', label: 'weak inhibitory' };
+  return { key: 'neutral', label: 'neutral / mixed' };
+}
+
+function aggregateDimensionScoresForXSetAtStage(xSet, stage, { normalize = true } = {}){
+  const stageRules = activeStageRulesForStage(stage);
+  const matched = matchedRulesForXSetAtStage(xSet, stage);
+  const normalization = normalizationLookup(stageRules);
+  const perDimension = new Map();
+
+  allDimensions().forEach(dimension => {
+    perDimension.set(dimension, {
+      dimension,
+      rawScore: 0,
+      normalized: 0,
+      bucket: scoreBucket(0),
+      matchedEffects: []
+    });
+  });
+
+  matched.forEach(rule => {
+    rule.effects.forEach(effect => {
+      const item = perDimension.get(effect.dimension);
+      item.rawScore += effect.weight;
+      item.matchedEffects.push({
+        rule,
+        weight: effect.weight
+      });
+    });
+  });
+
+  perDimension.forEach(item => {
+    item.normalized = normalize ? normalizedScore(item.rawScore, normalization.get(item.dimension)) : 0;
+    item.bucket = normalize ? scoreBucket(item.normalized) : scoreBucket(0);
+  });
+
+  return { stageRules, matched, perDimension };
+}
+
+function aggregateDimensionScoresForXSet(xSet, { normalize = true } = {}){
+  return aggregateDimensionScoresForXSetAtStage(xSet, selectedStage, { normalize });
+}
+
+function aggregateDimensionScores(){
+  return aggregateDimensionScoresForXSet(selectedX, { normalize: true });
+}
+
+function renderXNodeStates(presetMap){
+  const comparisonCounts = new Map();
+  if(isProfileComparisonMode()){
+    selectedProfiles.forEach(name => {
+      presetEntriesForProfile(name).forEach(entry => {
+        comparisonCounts.set(entry.x, (comparisonCounts.get(entry.x) || 0) + 1);
+      });
+    });
+  }
+  document.querySelectorAll('.x-node').forEach(node => {
+    const value = node.dataset.value;
+    const isActive = selectedX.has(value);
+    const support = presetMap.get(value);
+    const comparisonCount = comparisonCounts.get(value) || 0;
+    const comparisonActive = isProfileComparisonMode() && comparisonCount > 0;
+    node.className = `x-node${isActive || comparisonActive ? ' active' : ''}${support ? ' preset' : ''}${isComparisonMode() ? ' disabled' : ''}`;
+    node.innerHTML = `
+      <span class="node-row">
+        <span class="node-main">
+          <span class="node-label">${escapeHtml(value)}</span>
+          <span class="node-meta">${isProfileComparisonMode()
+            ? (comparisonActive ? `${comparisonCount} profile${comparisonCount === 1 ? '' : 's'}` : 'not in compared presets')
+            : (isStageComparisonMode()
+              ? (isActive ? 'in selected profile preset' : 'not in selected profile preset')
+              : (isActive ? 'selected' : 'click to add'))}</span>
+        </span>
+        <span class="badge-row">
+          ${support ? `<span class="badge support-${escapeHtml(support)}">${escapeHtml(support)}</span>` : ''}
+        </span>
+      </span>
+    `;
+  });
+  document.getElementById('conditionCount').textContent = isProfileComparisonMode()
+    ? `${selectedProfiles.length} profiles compared`
+    : (isStageComparisonMode()
+      ? `${activeComparisonStages().length} stage${activeComparisonStages().length === 1 ? '' : 's'} compared`
+      : `${selectedX.size} selected condition${selectedX.size === 1 ? '' : 's'}`);
+}
+
+function renderDimensions(aggregate){
+  const root = document.getElementById('dimensionGroups');
+  root.innerHTML = '';
+
+  Object.entries(data.dimension_groups).forEach(([group, entries]) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'group';
+    wrapper.innerHTML = `<div class="group-title">${escapeHtml(group)}</div>`;
+    const list = document.createElement('div');
+    list.className = 'dimension-list';
+
+    const sortedEntries = [...entries].sort((a, b) => {
+      const scoreA = aggregate.perDimension.get(a);
+      const scoreB = aggregate.perDimension.get(b);
+      if(Math.abs(scoreB.normalized) !== Math.abs(scoreA.normalized)) return Math.abs(scoreB.normalized) - Math.abs(scoreA.normalized);
+      return a.localeCompare(b);
+    });
+
+    sortedEntries.forEach(dimension => {
+      const item = aggregate.perDimension.get(dimension);
+      const button = document.createElement('button');
+      button.className = `dimension-node bucket-${item.bucket.key}${selectedDimension === dimension ? ' selected' : ''}`;
+      button.onclick = () => {
+        selectedDimension = selectedDimension === dimension ? null : dimension;
+        update();
+      };
+      button.innerHTML = `
+        <span class="node-row">
+          <span class="node-main">
+            <span class="node-label">${escapeHtml(dimensionValueLabel(dimension))}</span>
+            <span class="node-meta">${escapeHtml(item.bucket.label)} | raw ${item.rawScore > 0 ? '+' : ''}${item.rawScore} | norm ${(item.normalized * 100).toFixed(0)}%</span>
+          </span>
+          <span class="badge-row">
+            <span class="badge">${item.matchedEffects.length} rule${item.matchedEffects.length === 1 ? '' : 's'}</span>
+          </span>
+        </span>
+      `;
+      list.appendChild(button);
+    });
+
+    wrapper.appendChild(list);
+    root.appendChild(wrapper);
+  });
+}
+
+function buildComparisonSeries({ id, name, color, aggregate, rawValues, meta = {} }){
+  const maxAbs = rawValues.reduce((max, value) => Math.max(max, Math.abs(value)), 0);
+  const normalizedValues = rawValues.map(value => maxAbs ? (value / maxAbs) * 100 : 0);
+  return {
+    id,
+    name,
+    color,
+    matchedCount: aggregate.matched.length,
+    positiveTotal: rawValues.filter(value => value > 0).reduce((sum, value) => sum + value, 0),
+    negativeTotal: rawValues.filter(value => value < 0).reduce((sum, value) => sum + value, 0),
+    netTotal: rawValues.reduce((sum, value) => sum + value, 0),
+    maxAbs,
+    aggregate,
+    rawValues,
+    normalizedValues,
+    ...meta
+  };
+}
+
+function buildComparisonMeta(kind, series){
+  const scaleKey = comparisonScale === 'normalized' ? 'normalizedValues' : 'rawValues';
+  const allValues = series.flatMap(item => item[scaleKey]);
+  const minRaw = allValues.length ? Math.min(0, ...allValues) : -1;
+  const maxRaw = allValues.length ? Math.max(0, ...allValues) : 1;
+  const min = minRaw === maxRaw ? minRaw - 1 : minRaw;
+  const max = minRaw === maxRaw ? maxRaw + 1 : maxRaw;
+  return { kind, series, min, max, scale: comparisonScale, scaleKey };
+}
+
+function buildProfileComparisonData(){
+  const axes = comparisonAxes();
+  const series = selectedProfiles.map((name, index) => {
+    const presetSet = presetSetForProfile(name);
+    const aggregate = aggregateDimensionScoresForXSet(presetSet, { normalize: false });
+    const rawValues = axes.map(axis => comparisonAxisScore(axis, aggregate));
+    return buildComparisonSeries({
+      id: name,
+      name,
+      color: comparisonColor(index),
+      aggregate,
+      rawValues,
+      meta: { presetSize: presetSet.size }
+    });
+  });
+  return { axes, ...buildComparisonMeta('profiles', series) };
+}
+
+function buildStageComparisonData(){
+  const profileName = singleSelectedProfile();
+  const axes = comparisonAxes();
+  if(!profileName){
+    return {
+      kind: 'stages',
+      axes,
+      ...buildComparisonMeta('stages', []),
+      subjectProfile: null,
+      comparedStages: [],
+      emptyMessage: 'Select one profile to compare across stages.'
+    };
+  }
+  const presetSet = presetSetForProfile(profileName);
+  const comparedStages = activeComparisonStages();
+  const series = comparedStages.map(stage => {
+    const aggregate = aggregateDimensionScoresForXSetAtStage(presetSet, stage, { normalize: false });
+    const rawValues = axes.map(axis => comparisonAxisScore(axis, aggregate));
+    return buildComparisonSeries({
+      id: stage,
+      name: stageLabel(stage),
+      color: stageComparisonColor(stage),
+      aggregate,
+      rawValues,
+      meta: { stage }
+    });
+  });
+  return {
+    axes,
+    ...buildComparisonMeta('stages', series),
+    subjectProfile: profileName,
+    comparedStages,
+    emptyMessage: comparedStages.length ? '' : 'Select at least one stage to compare.'
+  };
+}
+
+function renderComparisonChart(comparison){
+  const root = document.getElementById('dimensionGroups');
+  const axes = comparison.axes;
+  const plotWidth = Math.max(980, 96 * Math.max(axes.length - 1, 1) + 96);
+  const width = plotWidth + 160;
+  const height = 420;
+  const margin = { top: 24, right: 92, bottom: 148, left: 56 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+  const valueRange = comparison.max - comparison.min || 1;
+  const xForIndex = index => margin.left + (axes.length === 1 ? innerWidth / 2 : (index * innerWidth) / (axes.length - 1));
+  const yForValue = value => margin.top + ((comparison.max - value) / valueRange) * innerHeight;
+  const tickCount = 5;
+  const ticks = Array.from({ length: tickCount }, (_, index) => comparison.max - (index * valueRange) / (tickCount - 1));
+  const zeroY = yForValue(0);
+
+  const grid = ticks.map(value => {
+    const y = yForValue(value);
+    return `
+      <line class="comparison-grid" x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}"></line>
+      <text class="comparison-axis" x="${margin.left - 8}" y="${y + 4}" text-anchor="end">${comparison.scale === 'normalized' ? `${Math.round(value)}%` : `${Math.round(value)}`}</text>
+    `;
+  }).join('');
+
+  const xLabels = axes.map((axis, index) => {
+    const rawX = xForIndex(index);
+    const rightThreshold = width - margin.right - 110;
+    const leftThreshold = margin.left + 110;
+    const anchor = rawX >= rightThreshold ? 'end' : (rawX <= leftThreshold ? 'start' : 'middle');
+    const x = rawX + (anchor === 'end' ? -8 : (anchor === 'start' ? 0 : -2));
+    return `
+      <text class="comparison-axis" transform="translate(${x}, ${height - margin.bottom + 22}) rotate(40)" text-anchor="${anchor}">
+        ${escapeHtml(axis.label)}
+      </text>
+    `;
+  }).join('');
+
+  const lines = comparison.series.map(series => {
+    const values = series[comparison.scaleKey];
+    const points = values.map((value, index) => `${xForIndex(index)},${yForValue(value)}`).join(' ');
+    const dots = values.map((value, index) => `
+      <circle class="comparison-dot" cx="${xForIndex(index)}" cy="${yForValue(value)}" r="4" fill="${series.color}">
+        <title>${escapeHtml(series.name)} | ${escapeHtml(axes[index].label)} | ${escapeHtml(comparisonAxisDirection(axes[index], value))} | ${formatComparisonValue(value, comparison.scale)}</title>
+      </circle>
+    `).join('');
+    return `
+      <polyline class="comparison-line" points="${points}" stroke="${series.color}"></polyline>
+      ${dots}
+    `;
+  }).join('');
+
+  const legend = comparison.series.map(series => `
+    <div class="comparison-legend-item">
+      <span class="comparison-swatch" style="background:${series.color}"></span>
+      <span>${escapeHtml(series.name)}</span>
+    </div>
+  `).join('');
+
+  root.innerHTML = `
+    <div class="comparison-chart-shell">
+      <div class="comparison-legend">${legend}</div>
+      <div class="comparison-chart-scroll">
+        <svg class="comparison-chart-svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" aria-label="Profile comparison chart">
+          ${grid}
+          <line class="comparison-zero" x1="${margin.left}" y1="${zeroY}" x2="${width - margin.right}" y2="${zeroY}"></line>
+          ${lines}
+          ${xLabels}
+        </svg>
+      </div>
+      <div class="comparison-note">${comparison.scale === 'raw'
+        ? `X-axis shows one comparison point per construct. For bipolar constructs, positive values mean the first direction shown in the tooltip and negative values mean the opposite. Y-axis shows raw aggregate rule totals for ${comparison.kind === 'profiles' ? 'the current stage' : 'each selected stage'}.`
+        : `X-axis shows one comparison point per construct. For bipolar constructs, positive values mean the first direction shown in the tooltip and negative values mean the opposite. Y-axis shows normalized ${comparison.kind === 'profiles' ? 'profile' : 'stage'} scores, where 100% is that series' strongest absolute construct signal.`}</div>
+    </div>
+  `;
+}
+
+function activeProfileSummary(presetMap){
+  const profileName = singleSelectedProfile();
+  if(!profileName) return '<div class="empty">No preset loaded. Use a profile chip if you want to start from the paper-backed profile matrix.</div>';
+  const badges = [...presetMap.entries()].map(([value, support]) => `<span class="badge support-${escapeHtml(support)}">${escapeHtml(support)} ${escapeHtml(value)}</span>`).join('');
+  return `
+    <div class="summary-card">
+      <strong>${escapeHtml(profileName)}</strong>
+      <div class="pill-row">${badges}</div>
+    </div>
+  `;
+}
+
+function topDimensions(aggregate){
+  return [...aggregate.perDimension.values()]
+    .filter(item => item.rawScore !== 0)
+    .sort((a, b) => {
+      if(Math.abs(b.normalized) !== Math.abs(a.normalized)) return Math.abs(b.normalized) - Math.abs(a.normalized);
+      return Math.abs(b.rawScore) - Math.abs(a.rawScore);
+    })
+    .slice(0, 6);
+}
+
+function ruleCard(rule, weight, dimension){
+  const weightText = weight === 0 ? 'matched rule' : `active effect ${weight > 0 ? `+${weight}` : `${weight}`}`;
+  const antecedents = rule.antecedents.map(value => `<span class="badge">${escapeHtml(value)}</span>`).join('');
+  const effects = rule.effects.map(effect => {
+    const label = `${effect.dimension} (${effect.weight > 0 ? '+' : ''}${effect.weight})`;
+    const active = effect.dimension === dimension ? ' style="font-weight:700;color:var(--text)"' : '';
+    return `<span class="badge"${active}>${escapeHtml(label)}</span>`;
+  }).join('');
+  const sources = (rule.source_rule_nos || []).join(', ');
+  return `
+    <div class="rule-card">
+      <h3>${escapeHtml(rule.label)}</h3>
+      <div class="rule-meta">
+        ${escapeHtml(rule.id)} | stage ${escapeHtml(rule.stages.map(stageLabel).join(', '))} | aggregate rule no. ${escapeHtml(sources)} | ${escapeHtml(weightText)}
+      </div>
+      <div class="rule-text">${escapeHtml(rule.rationale)}</div>
+      <div class="pill-row">${antecedents}</div>
+      <div class="pill-row">${effects}</div>
+    </div>
+  `;
+}
+
+function comparisonDivergences(comparison){
+  return comparison.axes.map((axis, index) => {
+    const scores = comparison.series.map(series => ({
+      series: series.name,
+      color: series.color,
+      value: comparison.scale === 'normalized'
+        ? series.normalizedValues[index]
+        : series.rawValues[index]
+    }));
+    const values = scores.map(score => score.value);
+    return {
+      axis,
+      scores,
+      spread: Math.max(...values) - Math.min(...values)
+    };
+  }).sort((a, b) => b.spread - a.spread);
+}
+
+function comparisonShiftCards(comparison){
+  if(comparison.kind !== 'stages' || comparison.series.length < 2) return [];
+  const orderedStages = (data?.stages || []).filter(stage => comparison.comparedStages.includes(stage));
+  const firstStage = orderedStages[0];
+  const lastStage = orderedStages[orderedStages.length - 1];
+  const firstSeries = comparison.series.find(item => item.stage === firstStage);
+  const lastSeries = comparison.series.find(item => item.stage === lastStage);
+  if(!firstSeries || !lastSeries || firstSeries === lastSeries) return [];
+  return comparison.axes.map((axis, index) => {
+    const firstValue = comparison.scale === 'normalized' ? firstSeries.normalizedValues[index] : firstSeries.rawValues[index];
+    const lastValue = comparison.scale === 'normalized' ? lastSeries.normalizedValues[index] : lastSeries.rawValues[index];
+    return {
+      axis,
+      firstValue,
+      lastValue,
+      delta: lastValue - firstValue,
+      firstLabel: firstSeries.name,
+      lastLabel: lastSeries.name
+    };
+  }).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 6);
+}
+
+function renderComparisonDetails(comparison){
+  const root = document.getElementById('detailsContent');
+  const divergences = comparisonDivergences(comparison).slice(0, 8);
+  const seriesCards = comparison.series.map(series => `
+    <div class="summary-card">
+      <strong>${escapeHtml(series.name)}</strong>
+      <span>${comparison.scale === 'raw' ? `net ${series.netTotal > 0 ? '+' : ''}${series.netTotal}` : `max signal ${series.maxAbs.toFixed(0)}`}</span>
+      <div class="pill-row">
+        <span class="badge">raw positive ${series.positiveTotal > 0 ? '+' : ''}${series.positiveTotal}</span>
+        <span class="badge">raw negative ${series.negativeTotal}</span>
+        <span class="badge">${series.matchedCount} matched rules</span>
+      </div>
+    </div>
+  `).join('');
+
+  const divergenceCards = divergences.map(item => `
+    <div class="summary-card">
+      <strong>${escapeHtml(item.axis.label)}</strong>
+      <span>${escapeHtml(comparisonAxisLegend(item.axis))}</span>
+      <div class="pill-row">
+        <span class="badge">spread ${comparison.scale === 'normalized' ? `${item.spread.toFixed(0)}%` : `${item.spread > 0 ? '+' : ''}${item.spread}`}</span>
+        ${item.scores.map(score => `<span class="badge" style="border-color:${score.color};color:${score.color}">${escapeHtml(score.series)} ${formatComparisonValue(score.value, comparison.scale)}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  const shiftCards = comparisonShiftCards(comparison).map(item => `
+    <div class="summary-card">
+      <strong>${escapeHtml(item.axis.label)}</strong>
+      <span>${escapeHtml(comparisonAxisLegend(item.axis))}</span>
+      <div class="pill-row">
+        <span class="badge">${escapeHtml(item.firstLabel)} ${formatComparisonValue(item.firstValue, comparison.scale)}</span>
+        <span class="badge">${escapeHtml(item.lastLabel)} ${formatComparisonValue(item.lastValue, comparison.scale)}</span>
+        <span class="badge">delta ${formatComparisonValue(item.delta, comparison.scale)}</span>
+      </div>
+    </div>
+  `).join('');
+
+  root.className = '';
+  root.innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-card"><strong>${comparison.kind === 'profiles' ? 'Stage' : 'Profile'}</strong><span>${escapeHtml(comparison.kind === 'profiles' ? stageLabel(selectedStage) : (comparison.subjectProfile || 'None selected'))}</span></div>
+      <div class="summary-card"><strong>${comparison.kind === 'profiles' ? 'Profiles' : 'Stages'}</strong><span>${comparison.kind === 'profiles' ? comparison.series.length : comparison.comparedStages.length}</span></div>
+      <div class="summary-card"><strong>Comparison axes</strong><span>${comparison.axes.length}</span></div>
+      <div class="summary-card"><strong>Mode</strong><span>${comparison.scale === 'raw' ? 'raw comparison' : 'normalized comparison'}</span></div>
+    </div>
+    <div class="section-title">${comparison.kind === 'profiles' ? 'Profiles compared' : 'Stages compared'}</div>
+    <div class="stack">${seriesCards}</div>
+    <div class="section-title">Top divergences</div>
+    ${divergenceCards ? `<div class="stack">${divergenceCards}</div>` : '<div class="empty">No divergence data available.</div>'}
+    ${shiftCards ? `<div class="section-title">Top stage shifts</div><div class="stack">${shiftCards}</div>` : ''}
+  `;
+}
+
+function renderComparisonEmptyState(message){
+  document.getElementById('dimensionGroups').innerHTML = `<div class="comparison-chart-shell"><div class="empty">${escapeHtml(message)}</div></div>`;
+  const root = document.getElementById('detailsContent');
+  root.className = 'empty';
+  root.textContent = message;
+}
+
+function renderDetails(aggregate, presetMap){
+  const root = document.getElementById('detailsContent');
+  const matched = aggregate.matched;
+  const strongCount = [...aggregate.perDimension.values()].filter(item => item.bucket.key === 'strong-supportive' || item.bucket.key === 'strong-inhibitory').length;
+  const top = topDimensions(aggregate);
+
+  let html = `
+    <div class="summary-grid">
+      <div class="summary-card"><strong>Stage</strong><span>${escapeHtml(stageLabel(selectedStage))}</span></div>
+      <div class="summary-card"><strong>Matched rules</strong><span>${matched.length}</span></div>
+      <div class="summary-card"><strong>Selected conditions</strong><span>${selectedX.size}</span></div>
+      <div class="summary-card"><strong>Strong signals</strong><span>${strongCount}</span></div>
+    </div>
+    <div class="section-title">Active preset</div>
+    ${activeProfileSummary(presetMap)}
+    <div class="section-title">Current conditions</div>
+    <div class="pill-row">
+      ${selectedX.size ? [...selectedX].sort().map(value => `<span class="badge">${escapeHtml(value)}</span>`).join('') : '<span class="empty">No conditions selected.</span>'}
+    </div>
+  `;
+
+  if(selectedDimension){
+    const item = aggregate.perDimension.get(selectedDimension);
+    const groupName = dimensionGroupName(selectedDimension);
+    html += `
+      <div class="section-title">Selected dimension</div>
+      <div class="summary-card">
+        <strong>${escapeHtml(groupName || 'Dimension')}</strong>
+        <span>${escapeHtml(dimensionValueLabel(selectedDimension))}</span>
+        <div class="pill-row">
+          ${groupName ? `<span class="badge">${escapeHtml(groupName)}</span>` : ''}
+          <span class="badge">raw ${item.rawScore > 0 ? '+' : ''}${item.rawScore}</span>
+          <span class="badge">norm ${(item.normalized * 100).toFixed(0)}%</span>
+          <span class="badge">${item.matchedEffects.length} matched rule${item.matchedEffects.length === 1 ? '' : 's'}</span>
+        </div>
+      </div>
+    `;
+    html += `<div class="section-title">Matched rules for this dimension</div>`;
+    if(item.matchedEffects.length){
+      html += `<div class="stack">${item.matchedEffects.map(entry => ruleCard(entry.rule, entry.weight, selectedDimension)).join('')}</div>`;
+    } else {
+      html += `<div class="empty">No active rules currently affect this dimension for the selected stage and conditions.</div>`;
+    }
+  } else {
+    html += `<div class="section-title">Top current signals</div>`;
+    if(top.length){
+      html += `<div class="stack">${top.map(item => `
+        <div class="summary-card">
+          <strong>${escapeHtml(dimensionGroupName(item.dimension) || 'Dimension')}</strong>
+          <span>${escapeHtml(dimensionValueLabel(item.dimension))}</span>
+          <div class="pill-row">
+            ${dimensionGroupName(item.dimension) ? `<span class="badge">${escapeHtml(dimensionGroupName(item.dimension))}</span>` : ''}
+            <span class="badge">${escapeHtml(item.bucket.label)}</span>
+            <span class="badge">raw ${item.rawScore > 0 ? '+' : ''}${item.rawScore}</span>
+            <span class="badge">norm ${(item.normalized * 100).toFixed(0)}%</span>
+            <span class="badge">${item.matchedEffects.length} rule${item.matchedEffects.length === 1 ? '' : 's'}</span>
+          </div>
+        </div>
+      `).join('')}</div>`;
+    } else {
+      html += `<div class="empty">No rules are currently active. Add more ` + '`C&A`' + ` or switch the stage.</div>`;
+    }
+
+    html += `<div class="section-title">Matched rules</div>`;
+    if(matched.length){
+      html += `<div class="stack">${matched.map(rule => ruleCard(rule, 0, '')).join('')}</div>`;
+    } else {
+      html += `<div class="empty">No literature rules match the current condition set for this stage.</div>`;
+    }
+  }
+
+  root.className = '';
+  root.innerHTML = html;
+}
+
+function update(){
+  if(!data) return;
+  renderProfiles();
+  renderViewModeControls();
+  renderStageComparisonChips();
+  updatePanelCopy();
+  const presetMap = currentPresetMap();
+  renderXNodeStates(presetMap);
+  if(isProfileComparisonMode()){
+    const comparison = buildProfileComparisonData();
+    if(!comparison.series.length){
+      renderComparisonEmptyState('Shift-select at least two profiles to compare.');
+      return;
+    }
+    renderComparisonChart(comparison);
+    renderComparisonDetails(comparison);
+    return;
+  }
+  if(isStageComparisonMode()){
+    const comparison = buildStageComparisonData();
+    if(!comparison.series.length){
+      renderComparisonEmptyState(comparison.emptyMessage || 'Select one profile and at least one stage to compare.');
+      return;
+    }
+    renderComparisonChart(comparison);
+    renderComparisonDetails(comparison);
+    return;
+  }
+  const aggregate = aggregateDimensionScores();
+  renderDimensions(aggregate);
+  renderDetails(aggregate, presetMap);
+}
+
+async function init(){
+  try{
+    const response = await fetch(DATA_URL, { cache: 'no-store' });
+    if(!response.ok) throw new Error(`HTTP ${response.status} while loading ${DATA_URL}`);
+    data = await response.json();
+    selectedComparisonStages = defaultComparisonStages();
+    validationIssues = validateData();
+    renderStageSelect();
+    renderProfiles();
+    renderViewModeControls();
+    renderXGroups();
+    renderValidationNotice();
+    update();
+  } catch(error){
+    console.error('[prototype v2 load error]', error);
+    const root = document.getElementById('detailsContent');
+    root.innerHTML = 'Failed to load the v2 JSON data file. Open the prototype through a local server so the JSON can be fetched.';
+    document.getElementById('validationNotice').hidden = false;
+    document.getElementById('validationNotice').innerHTML = `<strong>Load error</strong><br>${escapeHtml(error.message)}`;
+  }
+}
+
+document.getElementById('stageSelect').addEventListener('change', event => {
+  selectedStage = event.target.value;
+  selectedDimension = null;
+  update();
+});
+
+document.getElementById('comparisonScaleSelect').addEventListener('change', event => {
+  comparisonScale = event.target.value;
+  update();
+});
+
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  selectedProfiles = [];
+  selectedDimension = null;
+  selectedStage = 'developing';
+  selectedComparisonStages = defaultComparisonStages();
+  viewMode = 'single';
+  comparisonScale = 'raw';
+  selectedX = new Set();
+  document.getElementById('stageSelect').value = selectedStage;
+  document.getElementById('comparisonScaleSelect').value = comparisonScale;
+  update();
+});
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+{
+  "version": "v2",
+  "stages": ["initiating", "developing", "established"],
+  "x_groups": {
+    "Channel & Medium": [
+      "face-to-face",
+      "text-based CMC",
+      "public",
+      "synchronous",
+      "asynchronous",
+      "cue richness: low",
+      "persistence: high",
+      "continuity: high",
+      "speaking/listening modality"
+    ],
+    "Interaction Structure": [
+      "one-to-one",
+      "dyadic",
+      "dialogue",
+      "repeated",
+      "one-to-many",
+      "group",
+      "broadcast"
+    ],
+    "Relationship Context": [
+      "supportive",
+      "friendship context",
+      "romantic context",
+      "stranger context",
+      "restricted access"
+    ],
+    "Partner Perception": [
+      "anthropomorphism",
+      "authenticity: high",
+      "authenticity: low",
+      "empathy: high",
+      "responsiveness: high",
+      "understanding: high",
+      "fear of judgment: low",
+      "safety: high"
+    ],
+    "Motivation & Audience": [
+      "companionship seeking: high",
+      "privacy risk: high",
+      "reputational cost: high",
+      "permanence: high",
+      "impression management motivation: high",
+      "information sensitivity: high",
+      "network size: high",
+      "audience heterogeneity: high",
+      "perceived others disclose: high",
+      "observed gains to others",
+      "platform social relevance: high",
+      "initial liking: high"
+    ]
+  },
+  "dimension_groups": {
+    "Disclosure Amount": [
+      "Overall Disclosure > Higher",
+      "Overall Disclosure > Lower"
+    ],
+    "Disclosure Breadth": [
+      "Disclosure Breadth > Higher",
+      "Disclosure Breadth > Lower"
+    ],
+    "Disclosure Depth": [
+      "Disclosure Depth > Higher",
+      "Disclosure Depth > Lower"
+    ],
+    "Disclosure Intimacy": [
+      "Disclosure Intimacy > Higher",
+      "Disclosure Intimacy > Lower"
+    ],
+    "Disclosure Honesty": [
+      "Disclosure Honesty > Higher",
+      "Disclosure Honesty > Lower"
+    ],
+    "Disclosure Valence": [
+      "Disclosure Valence > More Positive",
+      "Disclosure Valence > More Negative"
+    ],
+    "Disclosure Style": [
+      "Disclosure Style > More Deliberate",
+      "Disclosure Style > More Spontaneous"
+    ],
+    "Interaction Process": [
+      "Interaction Process > More Direct Questioning",
+      "Interaction Process > More Reciprocal"
+    ],
+    "Relational Outcomes": [
+      "Relational Outcome > Higher Perceived Responsiveness",
+      "Relational Outcome > Higher Understanding",
+      "Relational Outcome > Higher Intimacy",
+      "Relational Outcome > Higher Liking",
+      "Relational Outcome > Higher Friendship Intensity",
+      "Relational Outcome > Higher Attributional Confidence"
+    ]
+  },
+  "profiles": {
+    "AI Companion": {
+      "source": "profile-dimnsion-results.md (H/M only matrix)",
+      "description": "Preset built only from the H/M evidence-backed profile matrix. Add any extra context manually.",
+      "preset": [
+        { "x": "anthropomorphism", "support": "M" },
+        { "x": "repeated", "support": "H" },
+        { "x": "continuity: high", "support": "M" },
+        { "x": "supportive", "support": "H" },
+        { "x": "empathy: high", "support": "M" },
+        { "x": "responsiveness: high", "support": "M" },
+        { "x": "understanding: high", "support": "M" },
+        { "x": "fear of judgment: low", "support": "H" },
+        { "x": "companionship seeking: high", "support": "H" },
+        { "x": "persistence: high", "support": "H" },
+        { "x": "privacy risk: high", "support": "M" }
+      ]
+    },
+    "Social Media Broadcast": {
+      "source": "profile-dimnsion-results.md (H/M only matrix)",
+      "description": "Preset built only from the H/M evidence-backed profile matrix. Add any extra context manually.",
+      "preset": [
+        { "x": "public", "support": "M" },
+        { "x": "one-to-many", "support": "H" },
+        { "x": "group", "support": "H" },
+        { "x": "broadcast", "support": "H" },
+        { "x": "asynchronous", "support": "M" },
+        { "x": "persistence: high", "support": "M" },
+        { "x": "privacy risk: high", "support": "M" },
+        { "x": "reputational cost: high", "support": "H" },
+        { "x": "permanence: high", "support": "M" },
+        { "x": "impression management motivation: high", "support": "H" }
+      ]
+    },
+    "Human-Human Face-to-Face": {
+      "source": "profile-dimnsion-results.md (H/M only matrix)",
+      "description": "Preset built only from the H/M evidence-backed profile matrix. Add any extra context manually.",
+      "preset": [
+        { "x": "repeated", "support": "H" },
+        { "x": "continuity: high", "support": "H" },
+        { "x": "one-to-one", "support": "H" },
+        { "x": "dyadic", "support": "H" },
+        { "x": "dialogue", "support": "H" },
+        { "x": "responsiveness: high", "support": "M" },
+        { "x": "understanding: high", "support": "M" }
+      ]
+    },
+    "Human-Human Private Online": {
+      "source": "profile-dimnsion-results.md (H/M only matrix)",
+      "description": "Preset built only from the H/M evidence-backed profile matrix. Add any extra context manually.",
+      "preset": [
+        { "x": "repeated", "support": "H" },
+        { "x": "continuity: high", "support": "H" },
+        { "x": "one-to-one", "support": "H" },
+        { "x": "dyadic", "support": "H" },
+        { "x": "dialogue", "support": "H" },
+        { "x": "understanding: high", "support": "M" },
+        { "x": "cue richness: low", "support": "H" },
+        { "x": "synchronous", "support": "M" }
+      ]
+    }
+  },
+  "rules": [
+    {
+      "id": "LIT_01",
+      "label": "Anthropomorphism and authenticity support reciprocity",
+      "source_rule_nos": [1],
+      "stages": ["developing", "established"],
+      "antecedents": ["anthropomorphism", "authenticity: high"],
+      "effects": [
+        { "dimension": "Interaction Process > More Reciprocal", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 1: anthropomorphism plus authenticity increases reciprocal interaction."
+    },
+    {
+      "id": "LIT_02",
+      "label": "Continuity strengthens reciprocity",
+      "source_rule_nos": [2],
+      "stages": ["developing", "established"],
+      "antecedents": ["continuity: high"],
+      "effects": [
+        { "dimension": "Interaction Process > More Reciprocal", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 2: high continuity supports stronger reciprocal interaction."
+    },
+    {
+      "id": "LIT_03",
+      "label": "Repeated one-to-one supportive AI contexts deepen disclosure",
+      "source_rule_nos": [3],
+      "stages": ["developing", "established"],
+      "antecedents": ["repeated", "one-to-one", "supportive", "anthropomorphism"],
+      "effects": [
+        { "dimension": "Disclosure Depth > Higher", "weight": 2 },
+        { "dimension": "Disclosure Intimacy > Higher", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 3: repeated one-to-one supportive interaction with anthropomorphism increases deeper self-disclosure."
+    },
+    {
+      "id": "LIT_04",
+      "label": "Companionship motives amplify deeper disclosure",
+      "source_rule_nos": [4],
+      "stages": ["developing", "established"],
+      "antecedents": ["repeated", "companionship seeking: high"],
+      "effects": [
+        { "dimension": "Disclosure Depth > Higher", "weight": 2 },
+        { "dimension": "Relational Outcome > Higher Intimacy", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 4: companionship or social motivation moderates repeated interaction toward deeper disclosure and attachment."
+    },
+    {
+      "id": "LIT_05",
+      "label": "Low authenticity suppresses disclosure",
+      "source_rule_nos": [5],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["anthropomorphism", "authenticity: low"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Lower", "weight": 4 },
+        { "dimension": "Disclosure Honesty > Lower", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 5: scripted or low-authenticity AI behavior lowers trust and personal disclosure."
+    },
+    {
+      "id": "LIT_07",
+      "label": "High responsiveness increases disclosure",
+      "source_rule_nos": [7],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["responsiveness: high"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 4 },
+        { "dimension": "Relational Outcome > Higher Intimacy", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 7 shows high responsiveness increases self-disclosure; later intimacy papers make that pathway relationally important."
+    },
+    {
+      "id": "LIT_08",
+      "label": "Low fear of judgment supports more and deeper disclosure",
+      "source_rule_nos": [8],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["fear of judgment: low"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 6 },
+        { "dimension": "Disclosure Depth > Higher", "weight": 6 },
+        { "dimension": "Disclosure Honesty > Higher", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 8: lower interpersonal fear of judgment increases disclosure, especially for sensitive topics."
+    },
+    {
+      "id": "LIT_09",
+      "label": "High information sensitivity reduces honesty",
+      "source_rule_nos": [11],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["anthropomorphism", "information sensitivity: high"],
+      "effects": [
+        { "dimension": "Disclosure Honesty > Lower", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 11: greater anthropomorphism or social presence in sensitive contexts can reduce truthful disclosure."
+    },
+    {
+      "id": "LIT_11",
+      "label": "Speaking or listening mode increases disclosure",
+      "source_rule_nos": [13],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["speaking/listening modality"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 13: speaking or listening modality yields more self-disclosure than typing or reading in many settings."
+    },
+    {
+      "id": "LIT_12",
+      "label": "Social relevance of a platform increases disclosure",
+      "source_rule_nos": [15],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["platform social relevance: high"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 15: higher perceived social relevance of the platform increases social-web self-disclosure."
+    },
+    {
+      "id": "LIT_13",
+      "label": "Restricted access supports deeper and more honest disclosure",
+      "source_rule_nos": [17],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["restricted access"],
+      "effects": [
+        { "dimension": "Disclosure Depth > Higher", "weight": 2 },
+        { "dimension": "Disclosure Honesty > Higher", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 17: restricted or specific-group access supports more sensitive disclosure than open public access."
+    },
+    {
+      "id": "LIT_14",
+      "label": "Large heterogeneous audiences increase posting but flatten depth",
+      "source_rule_nos": [18, 19],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["network size: high", "audience heterogeneity: high"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 2 },
+        { "dimension": "Disclosure Depth > Lower", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rules 18 and 19 together suggest bigger heterogeneous audiences increase activity while pushing toward lowest-common-denominator presentation."
+    },
+    {
+      "id": "LIT_15",
+      "label": "Large public networks tilt expression positive",
+      "source_rule_nos": [20],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["network size: high", "public"],
+      "effects": [
+        { "dimension": "Disclosure Valence > More Positive", "weight": 2 },
+        { "dimension": "Disclosure Valence > More Negative", "weight": -2 }
+      ],
+      "rationale": "Aggregate Rule 20: larger public networks produce more positive and less negative emotional presentation."
+    },
+    {
+      "id": "LIT_16",
+      "label": "Perceived disclosure by others increases own disclosure",
+      "source_rule_nos": [21],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["perceived others disclose: high"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 21: higher perceived disclosure by others increases own social-media disclosure."
+    },
+    {
+      "id": "LIT_17",
+      "label": "Observed gains to others increase disclosure",
+      "source_rule_nos": [22],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["observed gains to others"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 22: observed gains to others raise perceived gains to self and therefore increase disclosure."
+    },
+    {
+      "id": "LIT_18",
+      "label": "Early dyadic text CMC increases direct questioning",
+      "source_rule_nos": [27],
+      "stages": ["initiating"],
+      "antecedents": ["text-based CMC", "dyadic", "stranger context"],
+      "effects": [
+        { "dimension": "Interaction Process > More Direct Questioning", "weight": 5 }
+      ],
+      "rationale": "Aggregate Rule 27: dyadic CMC produces more direct questioning than face-to-face in get-acquainted interaction."
+    },
+    {
+      "id": "LIT_20",
+      "label": "Early dyadic text CMC increases disclosure frequency",
+      "source_rule_nos": [29],
+      "stages": ["initiating"],
+      "antecedents": ["text-based CMC", "dyadic", "stranger context"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 29: early dyadic stranger CMC more often increases disclosure frequency than face-to-face."
+    },
+    {
+      "id": "LIT_21",
+      "label": "Established face-to-face friendship supports deeper disclosure",
+      "source_rule_nos": [30, 33],
+      "stages": ["established"],
+      "antecedents": ["face-to-face", "friendship context"],
+      "effects": [
+        { "dimension": "Disclosure Depth > Higher", "weight": 2 },
+        { "dimension": "Disclosure Breadth > Higher", "weight": 2 },
+        { "dimension": "Relational Outcome > Higher Understanding", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rules 30 and 33 indicate that established friendship disclosure depth, breadth, and understanding more often favor face-to-face than online."
+    },
+    {
+      "id": "LIT_22",
+      "label": "Repeated continuity broadens and deepens disclosure",
+      "source_rule_nos": [32],
+      "stages": ["developing", "established"],
+      "antecedents": ["repeated", "continuity: high"],
+      "effects": [
+        { "dimension": "Disclosure Breadth > Higher", "weight": 3 },
+        { "dimension": "Disclosure Depth > Higher", "weight": 3 },
+        { "dimension": "Relational Outcome > Higher Understanding", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 32: greater relationship duration increases breadth, depth, and understanding."
+    },
+    {
+      "id": "LIT_23",
+      "label": "IM-style repeated friendship interaction increases intimacy",
+      "source_rule_nos": [35],
+      "stages": ["developing", "established"],
+      "antecedents": ["text-based CMC", "repeated", "friendship context"],
+      "effects": [
+        { "dimension": "Disclosure Intimacy > Higher", "weight": 2 },
+        { "dimension": "Relational Outcome > Higher Friendship Intensity", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 35: greater instant-messaging use with friends is associated with greater verbal, affective, and social intimacy."
+    },
+    {
+      "id": "LIT_24",
+      "label": "Reduced-cue romantic technology lowers breadth and depth",
+      "source_rule_nos": [39],
+      "stages": ["established"],
+      "antecedents": ["text-based CMC", "romantic context"],
+      "effects": [
+        { "dimension": "Disclosure Breadth > Lower", "weight": 3 },
+        { "dimension": "Disclosure Depth > Lower", "weight": 3 }
+      ],
+      "rationale": "Aggregate Rule 39: in ongoing romantic relationships, reduced-cue communication technologies are associated with lower breadth and depth than face-to-face conversation."
+    },
+    {
+      "id": "LIT_25",
+      "label": "Relationship development softens reduced-cue breadth penalties",
+      "source_rule_nos": [40],
+      "stages": ["established"],
+      "antecedents": ["text-based CMC", "romantic context", "continuity: high"],
+      "effects": [
+        { "dimension": "Disclosure Breadth > Higher", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 40: higher relationship development weakens the negative breadth association for text-based communication in ongoing relationships."
+    },
+    {
+      "id": "LIT_26",
+      "label": "Face-to-face zero-acquaintance interaction raises perceived responsiveness",
+      "source_rule_nos": [42],
+      "stages": ["initiating"],
+      "antecedents": ["face-to-face", "one-to-one", "dyadic"],
+      "effects": [
+        { "dimension": "Relational Outcome > Higher Perceived Responsiveness", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 42: in zero-acquaintance interaction, face-to-face produces higher perceived partner responsiveness than synchronous text-based CMC."
+    },
+    {
+      "id": "LIT_27",
+      "label": "Initial liking encourages disclosure",
+      "source_rule_nos": [46],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["initial liking: high"],
+      "effects": [
+        { "dimension": "Overall Disclosure > Higher", "weight": 3 },
+        { "dimension": "Relational Outcome > Higher Liking", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rule 46: greater initial liking for a partner increases self-disclosure to that partner."
+    },
+    {
+      "id": "LIT_28",
+      "label": "Responsiveness, understanding, and dialogue support intimacy",
+      "source_rule_nos": [50, 51],
+      "stages": ["developing", "established"],
+      "antecedents": ["responsiveness: high", "understanding: high", "dialogue"],
+      "effects": [
+        { "dimension": "Relational Outcome > Higher Intimacy", "weight": 3 },
+        { "dimension": "Interaction Process > More Reciprocal", "weight": 2 }
+      ],
+      "rationale": "Aggregate Rules 50 and 51 show that dyadic disclosure and perceived partner responsiveness are central to intimacy in ongoing interaction."
+    },
+    {
+      "id": "LIT_29",
+      "label": "Public social-web access suppresses intimate disclosure",
+      "source_rule_nos": [53],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["public"],
+      "effects": [
+        { "dimension": "Disclosure Intimacy > Lower", "weight": 2 },
+        { "dimension": "Disclosure Depth > Lower", "weight": 1 }
+      ],
+      "rationale": "Aggregate Rule 53: open public access is associated with less intimate or sensitive disclosure than restricted or specific-group access in social-web settings."
+    },
+    {
+      "id": "LIT_30",
+      "label": "Public high-risk broadcast disclosure can reduce liking",
+      "source_rule_nos": [54],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["public", "broadcast", "reputational cost: high"],
+      "effects": [
+        { "dimension": "Relational Outcome > Higher Liking", "weight": -2 }
+      ],
+      "rationale": "Aggregate Rule 54: in public broadcast SNS settings, intimate disclosure can become socially costly and reduce attraction when reputational stakes and judgments of appropriateness are salient."
+    },
+    {
+      "id": "LIT_31",
+      "label": "Broadcast audience pressure makes disclosure more deliberate",
+      "source_rule_nos": [55],
+      "stages": ["initiating", "developing", "established"],
+      "antecedents": ["reputational cost: high", "impression management motivation: high", "permanence: high"],
+      "effects": [
+        { "dimension": "Disclosure Style > More Deliberate", "weight": 2 },
+        { "dimension": "Disclosure Style > More Spontaneous", "weight": -1 }
+      ],
+      "rationale": "Aggregate Rule 55: when reputational stakes, impression management pressure, and permanence are all high, broadcast disclosure shifts toward more deliberate and less spontaneous self-presentation."
+    }
+  ]
+}
