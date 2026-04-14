@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Disclosure Survey Presentation</title>
+<style>
+:root{
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --panel-soft:#f8fbff;
+  --text:#0f172a;
+  --muted:#5b6b82;
+  --line:#dbe4ee;
+  --accent:#1d4ed8;
+  --accent-soft:#dbeafe;
+  --green:#16a34a;
+  --green-soft:#dcfce7;
+  --red:#dc2626;
+  --red-soft:#fee2e2;
+  --amber:#d97706;
+  --amber-soft:#ffedd5;
+  --purple:#7c3aed;
+  --purple-soft:#ede9fe;
+  --shadow:0 18px 40px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(180deg,#f8fbff 0%,#edf3f9 100%);
+  color:var(--text);
+  overflow:hidden;
+}
+.deck{
+  height:100%;
+  position:relative;
+}
+.slide{
+  position:absolute;
+  inset:0;
+  display:none;
+  padding:28px 78px 94px;
+}
+.slide.is-active{
+  display:block;
+}
+.slide-shell{
+  height:100%;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(219,228,238,.95);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  padding:42px 46px;
+  overflow:auto;
+}
+.eyebrow{
+  color:var(--accent);
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+h1,h2,h3,p{margin:0}
+h1{
+  font-size:48px;
+  line-height:1.04;
+  margin-bottom:18px;
+  max-width:980px;
+}
+h2{
+  font-size:38px;
+  line-height:1.08;
+  margin-bottom:14px;
+  max-width:980px;
+}
+h3{
+  font-size:20px;
+  line-height:1.2;
+  margin-bottom:10px;
+}
+.lede{
+  font-size:20px;
+  line-height:1.55;
+  color:var(--muted);
+  max-width:980px;
+}
+.sublede{
+  font-size:16px;
+  line-height:1.6;
+  color:var(--muted);
+  max-width:900px;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:28px;
+  margin-top:28px;
+  align-items:start;
+}
+.quote-card,
+.thesis-card,
+.card,
+.metric-card,
+.figure-card,
+.flow-card,
+.bar-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px 24px;
+  box-shadow:0 8px 24px rgba(15,23,42,.04);
+}
+.quote-card{
+  font-size:24px;
+  line-height:1.45;
+  font-weight:700;
+}
+.quote-card span{
+  display:block;
+  margin-top:12px;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--muted);
+  font-weight:400;
+}
+.thesis-card{
+  background:linear-gradient(180deg,#eff6ff 0%,#ffffff 100%);
+}
+.thesis-card strong{
+  display:block;
+  margin-bottom:10px;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:var(--accent);
+}
+.thesis-card p{
+  font-size:18px;
+  line-height:1.55;
+}
+.grid-2,.grid-3,.grid-4{
+  display:grid;
+  gap:18px;
+  margin-top:24px;
+}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card p,
+.metric-card p,
+.flow-card p,
+.bar-card p{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.card ul,
+.metric-card ul,
+.flow-card ul{
+  margin:10px 0 0 18px;
+  padding:0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.55;
+}
+.tag-row,
+.pill-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+.pill,
+.tag{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+}
+.tag.blue{background:var(--accent-soft);border-color:#bfdbfe;color:#1e40af}
+.tag.green{background:var(--green-soft);border-color:#bbf7d0;color:#166534}
+.tag.red{background:var(--red-soft);border-color:#fecaca;color:#991b1b}
+.tag.purple{background:var(--purple-soft);border-color:#ddd6fe;color:#5b21b6}
+.two-column{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+  margin-top:24px;
+}
+.contrast{
+  border-radius:22px;
+  border:1px solid var(--line);
+  padding:22px 24px;
+  background:var(--panel);
+}
+.contrast strong{
+  display:block;
+  margin-bottom:10px;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.contrast ul{
+  margin:0 0 0 18px;
+  padding:0;
+  font-size:16px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.figure-card{
+  margin-top:22px;
+  padding:20px;
+}
+.figure-card img{
+  display:block;
+  width:min(100%,880px);
+  margin:0 auto;
+  border-radius:16px;
+}
+.figure-card figcaption{
+  margin-top:14px;
+  font-size:14px;
+  line-height:1.55;
+  color:var(--muted);
+  text-align:center;
+}
+.bar-stack{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-top:18px;
+}
+.mini-stack{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.mini-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px 20px;
+  background:var(--panel);
+}
+.mini-card strong{
+  display:block;
+  margin-bottom:8px;
+  color:var(--accent);
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.mini-card p{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.evidence-counts{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+  margin-top:20px;
+}
+.count-card{
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);
+  padding:20px 22px;
+}
+.count-number{
+  font-size:42px;
+  line-height:1;
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:10px;
+}
+.count-card strong{
+  display:block;
+  margin-bottom:6px;
+  font-size:15px;
+}
+.count-card p{
+  font-size:14px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.bar-row{
+  display:grid;
+  grid-template-columns:170px 1fr 84px;
+  gap:14px;
+  align-items:center;
+}
+.bar-row strong{
+  font-size:15px;
+}
+.bar-track{
+  position:relative;
+  height:16px;
+  background:#eef4fb;
+  border-radius:999px;
+  overflow:hidden;
+}
+.bar-fill{
+  position:absolute;
+  inset:0 auto 0 0;
+  border-radius:999px;
+}
+.bar-fill.aic{background:#2563eb;width:100%}
+.bar-fill.smb{background:#22c55e;width:46.4%}
+.bar-fill.hhff{background:#ef4444;width:17.6%}
+.bar-fill.hhpo{background:#a855f7;width:20.8%}
+.bar-value{
+  text-align:right;
+  font-size:14px;
+  font-weight:700;
+  color:var(--muted);
+}
+.method-map{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+  margin-top:24px;
+}
+.method-card{
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:20px;
+  background:var(--panel);
+}
+.method-card strong{
+  display:block;
+  margin-bottom:10px;
+  color:var(--accent);
+  font-size:15px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.method-card h3{
+  font-size:22px;
+  margin-bottom:10px;
+}
+.method-card p{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.flow-stage-row{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
+  align-items:start;
+  margin-top:26px;
+}
+.flow-stage{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px;
+  background:var(--panel);
+  min-height:260px;
+}
+.flow-stage:not(:last-child)::after{
+  content:"->";
+  position:absolute;
+  top:18px;
+  right:-16px;
+  font-weight:700;
+  color:var(--muted);
+}
+.flow-stage strong{
+  display:block;
+  margin-bottom:12px;
+  color:var(--accent);
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.flow-chip{
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--panel-soft);
+  padding:10px 12px;
+  font-size:14px;
+  line-height:1.45;
+  color:var(--text);
+  margin-bottom:10px;
+}
+.flow-note{
+  margin-top:16px;
+  border:1px dashed #bfdbfe;
+  border-radius:16px;
+  background:#f8fbff;
+  padding:14px 16px;
+  font-size:14px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.medium-card.aic{border-top:5px solid #2563eb}
+.medium-card.smb{border-top:5px solid #22c55e}
+.medium-card.hhff{border-top:5px solid #ef4444}
+.medium-card.hhpo{border-top:5px solid #a855f7}
+.takeaway-list{
+  margin:18px 0 0 20px;
+  padding:0;
+  font-size:18px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.slide-footer{
+  position:fixed;
+  left:22px;
+  right:22px;
+  bottom:16px;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+}
+.progress{
+  flex:1;
+  height:8px;
+  border-radius:999px;
+  background:rgba(219,228,238,.9);
+  overflow:hidden;
+}
+.progress > span{
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#1d4ed8 0%,#7c3aed 100%);
+}
+.nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nav button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:13px;
+  cursor:pointer;
+}
+.nav button:hover{border-color:var(--accent)}
+.number{
+  min-width:76px;
+  text-align:right;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+@media (max-width: 1100px){
+  .slide{padding:22px 20px 92px}
+  .slide-shell{padding:28px 24px}
+  .hero-grid,.two-column,.grid-4,.grid-3,.flow-stage-row,.method-map{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .evidence-counts{grid-template-columns:1fr}
+  h1{font-size:38px}
+  h2{font-size:32px}
+}
+</style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide is-active" data-title="Title">
+      <div class="slide-shell">
+        <div class="eyebrow">Comparative Survey</div>
+        <h1>Disclosure Across AI Companions, Social Media, and Human-Human Interaction</h1>
+        <div class="hero-grid">
+          <div class="quote-card">
+            The key question is not which medium produces more disclosure in the abstract.
+            <span>The key question is what kind of disclosure a medium invites, suppresses, reshapes, or rewards.</span>
+          </div>
+          <div class="thesis-card">
+            <strong>Main claim</strong>
+            <p>`AIC` often looks closer to private dyadic interaction than to broadcast social media, but it also differs from both human-human literatures because the partner is partly designed, partly opaque, and variably anthropomorphized.</p>
+          </div>
+        </div>
+        <div class="tag-row">
+          <span class="tag blue">AIC</span>
+          <span class="tag green">SMB</span>
+          <span class="tag red">HHFF</span>
+          <span class="tag purple">HHPO</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Why Disclosure Matters">
+      <div class="slide-shell">
+        <div class="eyebrow">Problem</div>
+        <h2>Why disclosure matters, and why it is not one thing</h2>
+        <p class="lede">Self-disclosure sits at the center of relationship development, social support, therapy, identity presentation, persuasion, and self-understanding. But the same person may reveal more frequently in one medium, more deeply in another, and more honestly in a third.</p>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Relational</h3>
+            <p>Disclosure helps shape intimacy, trust, and mutuality in both human-human and human-AI interaction.</p>
+          </div>
+          <div class="card">
+            <h3>Supportive</h3>
+            <p>It matters for help-seeking, emotional relief, adherence, and whether interaction becomes meaningful rather than merely functional.</p>
+          </div>
+          <div class="card">
+            <h3>Strategic</h3>
+            <p>Disclosure is also managed in response to audience, risk, reputation, embarrassment, and platform persistence.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Central Argument">
+      <div class="slide-shell">
+        <div class="eyebrow">Thesis</div>
+        <h2>Medium matters, but not in a simple way</h2>
+        <div class="two-column">
+          <div class="contrast">
+            <strong>Too coarse</strong>
+            <ul>
+              <li>"Human vs AI"</li>
+              <li>"Online vs offline"</li>
+              <li>"More disclosure vs less disclosure"</li>
+            </ul>
+          </div>
+          <div class="contrast">
+            <strong>More useful</strong>
+            <ul>
+              <li>topology and audience structure</li>
+              <li>visibility and reputational cost</li>
+              <li>cue richness and response form</li>
+              <li>evaluative threat and support quality</li>
+              <li>memory, continuity, and time horizon</li>
+              <li>partner ontology and design</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-note">The survey's main move is decompositional: compare environments by mechanism clusters rather than by medium labels alone.</div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Medium Families">
+      <div class="slide-shell">
+        <div class="eyebrow">Comparative Frame</div>
+        <h2>Four medium families anchor the comparison</h2>
+        <div class="grid-4">
+          <div class="card medium-card aic">
+            <h3>`AIC`</h3>
+            <p>Conversational agents, companions, therapeutic bots, support bots, social robots, and related AI interlocutors.</p>
+          </div>
+          <div class="card medium-card smb">
+            <h3>`SMB`</h3>
+            <p>Public or semi-public social media disclosure, especially in broadcast and one-to-many settings.</p>
+          </div>
+          <div class="card medium-card hhff">
+            <h3>`HHFF`</h3>
+            <p>In-person human-human disclosure in cue-rich, socially consequential interaction.</p>
+          </div>
+          <div class="card medium-card hhpo">
+            <h3>`HHPO`</h3>
+            <p>Dyadic private online human-human interaction such as chat, instant messaging, and other mediated private channels.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="What Counts as Disclosure">
+      <div class="slide-shell">
+        <div class="eyebrow">Measurement</div>
+        <h2>Disclosure is multidimensional</h2>
+        <p class="sublede">Many apparent contradictions in the literature are really measurement differences. Different papers operationalize different parts of the disclosure construct.</p>
+        <div class="grid-4">
+          <div class="metric-card"><h3>Amount</h3><p>frequency or amount of revealed content</p></div>
+          <div class="metric-card"><h3>Depth</h3><p>intimacy, emotional depth, vulnerability</p></div>
+          <div class="metric-card"><h3>Breadth</h3><p>range of topics or domains covered</p></div>
+          <div class="metric-card"><h3>Honesty</h3><p>accuracy, directness, deliberateness</p></div>
+          <div class="metric-card"><h3>Willingness</h3><p>intention or readiness to disclose</p></div>
+          <div class="metric-card"><h3>Behavior</h3><p>actual disclosure traces and content</p></div>
+          <div class="metric-card"><h3>Consequences</h3><p>trust, return, adherence, relief, follow-through</p></div>
+          <div class="metric-card"><h3>Interpretation</h3><p>what disclosure means depends on medium, stage, and partner type</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Evidence Base">
+      <div class="slide-shell">
+        <div class="eyebrow">Scope</div>
+        <h2>Broad comparative evidence base, narrative survey logic</h2>
+        <div class="hero-grid">
+          <div class="bar-card">
+            <h3>Corpus distribution</h3>
+            <div class="bar-stack">
+              <div class="bar-row"><strong>AIC</strong><div class="bar-track"><span class="bar-fill aic"></span></div><div class="bar-value">125</div></div>
+              <div class="bar-row"><strong>SMB</strong><div class="bar-track"><span class="bar-fill smb"></span></div><div class="bar-value">58</div></div>
+              <div class="bar-row"><strong>HHFF</strong><div class="bar-track"><span class="bar-fill hhff"></span></div><div class="bar-value">22</div></div>
+              <div class="bar-row"><strong>HHPO</strong><div class="bar-track"><span class="bar-fill hhpo"></span></div><div class="bar-value">26</div></div>
+            </div>
+          </div>
+          <div class="mini-stack">
+            <div class="mini-card">
+              <strong>Survey type</strong>
+              <p>Comparative narrative survey rather than formal meta-analysis.</p>
+            </div>
+            <div class="mini-card">
+              <strong>Evidence character</strong>
+              <p>Broad heterogeneous evidence base spanning theory, methods, mechanisms, and downstream outcomes.</p>
+            </div>
+          </div>
+        </div>
+        <div class="evidence-counts">
+          <div class="count-card">
+            <div class="count-number">1,184</div>
+            <strong>Extracted support statements</strong>
+            <p>Atomic evidence statements linked across the survey summaries and evidence mapping files.</p>
+          </div>
+          <div class="count-card">
+            <div class="count-number">217</div>
+            <strong>Aggregate proposition-level rules</strong>
+            <p>The broader proposition inventory is later compressed in the paper into `10` proposition families (`PR1` to `PR10`).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Method Asymmetry">
+      <div class="slide-shell">
+        <div class="eyebrow">Methods</div>
+        <h2>Each literature sees most clearly what its methods are built to detect</h2>
+        <div class="grid-4">
+          <div class="card medium-card aic">
+            <h3>AIC</h3>
+            <ul>
+              <li>fine-grained causal manipulation</li>
+              <li>support style and reciprocity</li>
+              <li>interface cues, labeling, continuity</li>
+            </ul>
+          </div>
+          <div class="card medium-card smb">
+            <h3>SMB</h3>
+            <ul>
+              <li>population-scale association</li>
+              <li>audience structure, visibility, persistence</li>
+              <li>real networked ecologies</li>
+            </ul>
+          </div>
+          <div class="card medium-card hhff">
+            <h3>HHFF</h3>
+            <ul>
+              <li>naturalistic interpersonal process</li>
+              <li>responsiveness and mutual vulnerability</li>
+              <li>embodied interaction</li>
+            </ul>
+          </div>
+          <div class="card medium-card hhpo">
+            <h3>HHPO</h3>
+            <ul>
+              <li>channel comparison</li>
+              <li>reduced-cue mechanisms</li>
+              <li>weaker on long-horizon ecologies</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Question to Method Map">
+      <div class="slide-shell">
+        <h2>Which method makes sense for which question?</h2>
+        <div class="method-map">
+          <div class="method-card">
+            <strong>Causal</strong>
+            <h3>Turn-level mechanism questions</h3>
+            <p>Use controlled interaction or message-level experiments when the aim is to isolate one mechanism while holding the rest of the interaction constant.</p>
+          </div>
+          <div class="method-card">
+            <strong>Relational</strong>
+            <h3>Processual and trajectory questions</h3>
+            <p>Use diaries, multi-session studies, or longitudinal interventions when time, habituation, or relationship stage is part of the mechanism.</p>
+          </div>
+          <div class="method-card">
+            <strong>Audience</strong>
+            <h3>Visibility and audience-structure questions</h3>
+            <p>Use `SMB` survey, trace, or platform-level observational designs when heterogeneous audiences and publicness are the phenomenon.</p>
+          </div>
+          <div class="method-card">
+            <strong>Field-sensitive</strong>
+            <h3>Sensitive disclosure under constraints</h3>
+            <p>Use bounded field, deployment, or quasi-field designs when compliance, help-seeking, or institutional realism matters.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Comparative Framework">
+      <div class="slide-shell">
+        <h2>Comparative profile of core disclosure dimensions across media</h2>
+        <figure class="figure-card">
+          <img src="./disclosure-framework-radar.png" alt="Comparative profile of core disclosure dimensions across media" />
+          <figcaption>Figure 2 visualizes the section's core claim: medium effects are better understood as profiles of structural and relational conditions than as simple label-level contrasts.</figcaption>
+        </figure>
+        <div class="pill-row">
+          <span class="pill">dyadic structure</span>
+          <span class="pill">visibility / persistence</span>
+          <span class="pill">cue richness</span>
+          <span class="pill">human evaluative presence</span>
+          <span class="pill">designed / configurable partner</span>
+          <span class="pill">repeated interaction / memory</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="SMB">
+      <div class="slide-shell">
+        <div class="eyebrow">SMB</div>
+        <h2>Social media broadcast shows what disclosure looks like under publicness</h2>
+        <div class="two-column">
+          <div class="card">
+            <h3>Basic logic</h3>
+            <ul>
+              <li>one-to-many or many-to-many visibility</li>
+              <li>imagined audience and context collapse</li>
+              <li>reputational exposure and persistence</li>
+              <li>impression management pressure</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Why it matters here</h3>
+            <p>`SMB` is the strongest contrast case for publicness, networked audience logic, and reputational cost. It helps show that some apparent AIC advantages come from private topology, not from AI alone.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="HHFF">
+      <div class="slide-shell">
+        <div class="eyebrow">HHFF</div>
+        <h2>Face-to-face disclosure clarifies the role of responsiveness and reciprocity</h2>
+        <div class="two-column">
+          <div class="card">
+            <h3>Core face-to-face logic</h3>
+            <p>Disclosure does not automatically create closeness. Disclosure plus responsive reception creates closeness.</p>
+          </div>
+          <div class="card">
+            <h3>Comparative contribution</h3>
+            <p>`HHFF` provides the clearest benchmark for a supportive, cue-rich, dyadic disclosure environment and shows why responsiveness is relational rather than mechanical.</p>
+          </div>
+        </div>
+        <div class="flow-note">This is the strongest baseline for the support-quality and reciprocity claims that later reappear in the AIC literature.</div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="HHPO">
+      <div class="slide-shell">
+        <div class="eyebrow">HHPO</div>
+        <h2>Private online human-human interaction is the closest non-AIC comparison family</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>What it shows</h3>
+            <p>Reduced cues can support direct questioning, strategic disclosure, and faster uncertainty reduction.</p>
+          </div>
+          <div class="card">
+            <h3>What it complicates</h3>
+            <p>Online private interaction is not uniformly more intimate than face-to-face. Relationship stage matters.</p>
+          </div>
+          <div class="card">
+            <h3>Why it matters for AIC</h3>
+            <p>Some AIC effects may reflect structural similarity to low-cue private exchange rather than uniquely AI-specific properties.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Why AIC Is Distinctive">
+      <div class="slide-shell">
+        <div class="eyebrow">AIC</div>
+        <h2>Why the AIC literature is distinctive</h2>
+        <figure class="figure-card">
+          <img src="./aic-intersection-venn.svg" alt="AIC as an intersection case spanning HHPO private dyadic structure, HHFF supportive process, and SMB visibility or platform concerns, with the added condition that the partner is partly designed and experimentally configurable." />
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide" data-title="AIC Mechanism Flow">
+      <div class="slide-shell">
+        <h2>AIC disclosure as a mechanism-to-outcome pathway</h2>
+        <div class="flow-stage-row">
+          <div class="flow-stage">
+            <strong>Designed features</strong>
+            <div class="flow-chip">support style</div>
+            <div class="flow-chip">self-disclosure strategy</div>
+            <div class="flow-chip">identity framing and anthropomorphism</div>
+            <div class="flow-chip">interface cues and pacing</div>
+            <div class="flow-chip">continuity and remembered context</div>
+          </div>
+          <div class="flow-stage">
+            <strong>Perceptions</strong>
+            <div class="flow-chip">perceived responsiveness</div>
+            <div class="flow-chip">lower fear of judgment</div>
+            <div class="flow-chip">warmth / competence / social presence</div>
+            <div class="flow-chip">trust and relationship framing</div>
+          </div>
+          <div class="flow-stage">
+            <strong>Disclosure</strong>
+            <div class="flow-chip">User disclosure</div>
+            <div class="flow-chip">AIC disclosure</div>
+            <p class="sublede">These can interact reciprocally rather than as a one-shot input-output pair.</p>
+          </div>
+          <div class="flow-stage">
+            <strong>Downstream effects</strong>
+            <div class="flow-chip">relief and emotional processing</div>
+            <div class="flow-chip">satisfaction and reuse</div>
+            <div class="flow-chip">trust calibration and relationship deepening</div>
+            <div class="flow-chip">compliance, follow-through, and referral</div>
+            <div class="flow-chip">risk channel</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="AIC Convergences">
+      <div class="slide-shell">
+        <div class="eyebrow">AIC Findings</div>
+        <h2>Strong convergences in the AIC literature</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Disclosure can be meaningful</h3>
+            <p>Disclosure to AI is not merely shallow role-play or pure task convenience.</p>
+          </div>
+          <div class="card">
+            <h3>Support quality matters</h3>
+            <p>Perceived responsiveness and emotionally fitting support matter more than output presence alone.</p>
+          </div>
+          <div class="card">
+            <h3>Reciprocity works conditionally</h3>
+            <p>Reciprocal disclosure is not a simple mirroring trick; it works best when emotionally resonant and context-matched.</p>
+          </div>
+          <div class="card">
+            <h3>Time changes the mechanism</h3>
+            <p>Repeated interaction changes both disclosure itself and how the partner is interpreted.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Moderators and Tensions">
+      <div class="slide-shell">
+        <div class="eyebrow">AIC Findings</div>
+        <h2>What is conditional, moderated, or still unsettled</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Anthropomorphism</h3>
+            <p>Can help when it increases warmth or fluency, but hurt when it increases evaluative threat or embarrassment.</p>
+          </div>
+          <div class="card">
+            <h3>Partner identity</h3>
+            <p>"Human vs AI" does not carry a stable sign because responsiveness, judgment threat, trust, and expectations can move in different directions.</p>
+          </div>
+          <div class="card">
+            <h3>Long-horizon effects</h3>
+            <p>Still unsettled: whether disclosure deepens, plateaus, destabilizes, or produces uneven benefit-risk profiles over longer periods.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="What Disclosure Does">
+      <div class="slide-shell">
+        <div class="eyebrow">AIC Effects</div>
+        <h2>What disclosure does in AIC settings</h2>
+        <div class="grid-3">
+          <div class="card"><h3>Relief</h3><p>emotional processing, comfort, coping</p></div>
+          <div class="card"><h3>Satisfaction</h3><p>reuse intention, intimacy, willingness to continue</p></div>
+          <div class="card"><h3>Trust calibration</h3><p>trust-building without reducing disclosure to trust alone</p></div>
+          <div class="card"><h3>Compliance</h3><p>recommendation acceptance, adherence, follow-through</p></div>
+          <div class="card"><h3>Relationship deepening</h3><p>agent becomes more familiar, social, or companion-like</p></div>
+          <div class="card"><h3>Risk channel</h3><p>over-disclosure, privacy exposure, dependence, asymmetric understanding</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Gaps">
+      <div class="slide-shell">
+        <div class="eyebrow">Gaps</div>
+        <h2>Major blind spots in the current evidence base</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>AIC-specific</h3>
+            <ul>
+              <li>durable functional companions</li>
+              <li>long-horizon harm research</li>
+              <li>stronger moderator designs</li>
+              <li>more multimodal and embodied work</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Cross-medium</h3>
+            <ul>
+              <li>harmonized disclosure dimensions</li>
+              <li>direct AIC / HHPO / HHFF / SMB comparison</li>
+              <li>better integration of audience and partner models</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Methodological</h3>
+            <ul>
+              <li>formal and computational modeling</li>
+              <li>more behavior, fewer intention-only studies</li>
+              <li>more temporal designs</li>
+              <li>cross-context causal transport tests</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Research Agenda">
+      <div class="slide-shell">
+        <div class="eyebrow">Future Work</div>
+        <h2>Research agenda</h2>
+        <div class="method-map">
+          <div class="method-card">
+            <strong>Decompose</strong>
+            <h3>Model environments by mechanisms</h3>
+            <p>Use topology, visibility, cue richness, partner ontology, support quality, social-risk cues, and memory rather than coarse medium labels.</p>
+          </div>
+          <div class="method-card">
+            <strong>Harmonize</strong>
+            <h3>Use comparable disclosure dimensions</h3>
+            <p>Distinguish frequency, breadth, depth, honesty, emotional vulnerability, willingness, and downstream consequences consistently.</p>
+          </div>
+          <div class="method-card">
+            <strong>Compare</strong>
+            <h3>Run direct cross-medium programs</h3>
+            <p>Build matched paradigms across `AIC`, `HHPO`, and `HHFF`, and vary publicness to connect dyadic and `SMB` models.</p>
+          </div>
+          <div class="method-card">
+            <strong>Test</strong>
+            <h3>Exploit AIC as an intervention surface</h3>
+            <p>Vary empathy, self-disclosure strategy, anthropomorphism, memory, pacing, and role framing to test disclosure mechanisms directly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Takeaways">
+      <div class="slide-shell">
+        <div class="eyebrow">Conclusion</div>
+        <h2>Takeaways</h2>
+        <ol class="takeaway-list">
+          <li>Disclosure is multidimensional, not one generic quantity.</li>
+          <li>Media comparison works best when decomposed into structural and relational dimensions.</li>
+          <li>`AIC` is not just another disclosure channel; it is also a designed disclosure environment.</li>
+          <li>The main payoff is not deciding which medium "wins," but building a cumulative model of what shapes disclosure.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <div class="slide-footer">
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <div class="nav">
+      <button id="prevBtn" type="button">Prev</button>
+      <button id="nextBtn" type="button">Next</button>
+      <div class="number" id="slideCount">1 / 1</div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const slideCount = document.getElementById('slideCount');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+
+  function clamp(index) {
+    return Math.max(0, Math.min(slides.length - 1, index));
+  }
+
+  function syncHash(index) {
+    history.replaceState(null, '', `#slide-${index + 1}`);
+  }
+
+  function activate(index, updateHash = true) {
+    current = clamp(index);
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('is-active', i === current);
+    });
+    slideCount.textContent = `${current + 1} / ${slides.length}`;
+    progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    if (updateHash) syncHash(current);
+  }
+
+  function readHash() {
+    const match = window.location.hash.match(/slide-(\d+)/);
+    if (!match) return 0;
+    return clamp(parseInt(match[1], 10) - 1);
+  }
+
+  prevBtn.addEventListener('click', () => activate(current - 1));
+  nextBtn.addEventListener('click', () => activate(current + 1));
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+      event.preventDefault();
+      activate(current + 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      event.preventDefault();
+      activate(current - 1);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      activate(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      activate(slides.length - 1);
+    }
+  });
+
+  window.addEventListener('hashchange', () => activate(readHash(), false));
+  activate(readHash(), false);
+})();
+</script>
+</body>
+</html>

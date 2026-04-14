@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">AIC intersection Venn diagram</title>
+  <desc id="desc">A Venn-style diagram showing AIC at the intersection of HHPO, HHFF, and SMB, with one shared characteristic shown in each circle and a separate new-condition callout for the partly designed partner.</desc>
+  <rect width="960" height="620" fill="#ffffff"/>
+  <circle cx="340" cy="255" r="165" fill="#dbeafe" fill-opacity="0.85" stroke="#60a5fa" stroke-width="3"/>
+  <circle cx="620" cy="255" r="165" fill="#dcfce7" fill-opacity="0.85" stroke="#4ade80" stroke-width="3"/>
+  <circle cx="480" cy="405" r="165" fill="#fee2e2" fill-opacity="0.85" stroke="#f87171" stroke-width="3"/>
+
+  <text x="340" y="115" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#1e3a8a">HHPO</text>
+  <text x="620" y="115" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#166534">HHFF</text>
+  <text x="480" y="580" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#991b1b">SMB</text>
+
+  <text x="258" y="246" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1e40af">private</text>
+  <text x="258" y="278" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1e40af">dyadic</text>
+
+  <text x="702" y="246" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#166534">supportive</text>
+  <text x="702" y="278" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#166534">process</text>
+
+  <text x="480" y="472" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#991b1b">visibility</text>
+  <text x="480" y="504" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#991b1b">concerns</text>
+
+  <circle cx="480" cy="274" r="82" fill="#ffffff" stroke="#1d4ed8" stroke-width="4"/>
+  <text x="480" y="285" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#1d4ed8">AIC</text>
+
+  <line x1="480" y1="356" x2="480" y2="366" stroke="#1d4ed8" stroke-width="3"/>
+  <rect x="272" y="366" width="416" height="74" rx="20" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+  <text x="480" y="412" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1d4ed8">New condition: partner partly designed</text>
+</svg>
