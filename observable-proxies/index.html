@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learning Observable Proxies for Latent Multi-Turn Harm in AI Companions</title>
+<style>
+:root{
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --panel-soft:#f8fbff;
+  --text:#0f172a;
+  --muted:#5b6b82;
+  --line:#dbe4ee;
+  --accent:#1d4ed8;
+  --accent-soft:#dbeafe;
+  --green:#16a34a;
+  --green-soft:#dcfce7;
+  --red:#dc2626;
+  --red-soft:#fee2e2;
+  --amber:#d97706;
+  --amber-soft:#ffedd5;
+  --purple:#7c3aed;
+  --purple-soft:#ede9fe;
+  --shadow:0 18px 40px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(180deg,#f8fbff 0%,#edf3f9 100%);
+  color:var(--text);
+  overflow:hidden;
+}
+.deck{
+  height:100%;
+  position:relative;
+}
+.slide{
+  position:absolute;
+  inset:0;
+  display:none;
+  padding:28px 78px 94px;
+}
+.slide.is-active{
+  display:block;
+}
+.slide-shell{
+  height:100%;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(219,228,238,.95);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  padding:42px 46px;
+  overflow:auto;
+}
+.eyebrow{
+  color:var(--accent);
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+h1,h2,h3,p{margin:0}
+h1{
+  font-size:44px;
+  line-height:1.08;
+  margin-bottom:18px;
+  max-width:1060px;
+}
+h2{
+  font-size:36px;
+  line-height:1.08;
+  margin-bottom:14px;
+  max-width:1000px;
+}
+h3{
+  font-size:20px;
+  line-height:1.2;
+  margin-bottom:10px;
+}
+.lede{
+  font-size:20px;
+  line-height:1.55;
+  color:var(--muted);
+  max-width:1000px;
+}
+.sublede{
+  font-size:16px;
+  line-height:1.6;
+  color:var(--muted);
+  max-width:940px;
+}
+.quote-card,
+.thesis-card,
+.card,
+.metric-card,
+.figure-card,
+.flow-card,
+.bar-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px 24px;
+  box-shadow:0 8px 24px rgba(15,23,42,.04);
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:28px;
+  margin-top:28px;
+  align-items:start;
+}
+.quote-card{
+  font-size:23px;
+  line-height:1.45;
+  font-weight:700;
+}
+.quote-card span{
+  display:block;
+  margin-top:12px;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--muted);
+  font-weight:400;
+}
+.thesis-card{
+  background:linear-gradient(180deg,#eff6ff 0%,#ffffff 100%);
+}
+.thesis-card strong{
+  display:block;
+  margin-bottom:10px;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:var(--accent);
+}
+.thesis-card p{
+  font-size:18px;
+  line-height:1.55;
+}
+.grid-2,.grid-3,.grid-4{
+  display:grid;
+  gap:18px;
+  margin-top:24px;
+}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card p,
+.metric-card p,
+.flow-card p,
+.bar-card p{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.card ul,
+.metric-card ul,
+.flow-card ul{
+  margin:10px 0 0 18px;
+  padding:0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.55;
+}
+.card ul li{margin-bottom:6px}
+.tag-row,
+.pill-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+.pill,
+.tag{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+}
+.tag.blue{background:var(--accent-soft);border-color:#bfdbfe;color:#1e40af}
+.tag.green{background:var(--green-soft);border-color:#bbf7d0;color:#166534}
+.tag.red{background:var(--red-soft);border-color:#fecaca;color:#991b1b}
+.tag.amber{background:var(--amber-soft);border-color:#fed7aa;color:#9a3412}
+.tag.purple{background:var(--purple-soft);border-color:#ddd6fe;color:#5b21b6}
+.two-column{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+  margin-top:24px;
+}
+.contrast{
+  border-radius:22px;
+  border:1px solid var(--line);
+  padding:22px 24px;
+  background:var(--panel);
+}
+.contrast strong{
+  display:block;
+  margin-bottom:10px;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.contrast ul{
+  margin:0 0 0 18px;
+  padding:0;
+  font-size:16px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.contrast ul li{margin-bottom:7px}
+.takeaway-list{
+  margin:18px 0 0 20px;
+  padding:0;
+  font-size:18px;
+  line-height:1.65;
+  color:var(--muted);
+}
+.takeaway-list li{margin-bottom:10px}
+.tax-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:22px;
+  font-size:14.5px;
+}
+.tax-table th,
+.tax-table td{
+  text-align:left;
+  padding:13px 14px;
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+  line-height:1.45;
+}
+.tax-table th{
+  background:var(--panel-soft);
+  color:var(--accent);
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.tax-table tr:last-child td{border-bottom:none}
+.tax-table td:first-child{font-weight:700;color:var(--text);white-space:nowrap}
+.math-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:26px 30px;
+  box-shadow:0 8px 24px rgba(15,23,42,.04);
+  margin-top:22px;
+  font-size:20px;
+  line-height:1.6;
+}
+.math-card.display{
+  text-align:center;
+  font-size:18px;
+  background:linear-gradient(180deg,#eff6ff 0%,#ffffff 100%);
+  overflow-x:auto;
+}
+.math-card.display mjx-container{max-width:100%}
+.math-note{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--muted);
+  margin-top:16px;
+  max-width:1000px;
+}
+.callout{
+  margin-top:20px;
+  border:1px dashed #bfdbfe;
+  border-radius:16px;
+  background:#f8fbff;
+  padding:16px 20px;
+  font-size:16px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.callout.green{
+  border-color:#bbf7d0;
+  background:#f3fdf6;
+  color:#14532d;
+}
+.footnote{
+  margin-top:20px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+  font-size:12.5px;
+  line-height:1.5;
+  color:var(--muted);
+}
+.footnote .code{font-weight:700;color:var(--accent)}
+.figure-card{
+  margin-top:22px;
+  background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);
+}
+.figure-card img{
+  width:100%;
+  max-height:390px;
+  object-fit:contain;
+  display:block;
+}
+.figure-caption{
+  margin-top:12px;
+  font-size:14px;
+  line-height:1.55;
+  color:var(--muted);
+}
+.split-figure{
+  display:grid;
+  grid-template-columns:.95fr 1.05fr;
+  gap:22px;
+  margin-top:22px;
+  align-items:center;
+}
+.formula-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:18px;
+}
+.formula-chip{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:16px;
+  padding:12px 14px;
+  font-size:15px;
+  color:var(--text);
+}
+code,.mono{
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  background:var(--accent-soft);
+  color:#1e40af;
+  padding:1px 6px;
+  border-radius:6px;
+  font-size:.92em;
+}
+.slide-footer{
+  position:fixed;
+  left:22px;
+  right:22px;
+  bottom:16px;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+}
+.progress{
+  flex:1;
+  height:8px;
+  border-radius:999px;
+  background:rgba(219,228,238,.9);
+  overflow:hidden;
+}
+.progress > span{
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#1d4ed8 0%,#7c3aed 100%);
+}
+.nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nav button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:13px;
+  cursor:pointer;
+}
+.nav button:hover{border-color:var(--accent)}
+.nav button:disabled{opacity:.45;cursor:not-allowed}
+.number{
+  min-width:76px;
+  text-align:right;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+@media (max-width: 1100px){
+  .slide{padding:22px 20px 92px}
+  .slide-shell{padding:28px 24px}
+  .hero-grid,.two-column,.grid-4,.grid-3,.split-figure{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  h1{font-size:34px}
+  h2{font-size:28px}
+}
+</style>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    svg: { fontCache: 'global' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+  <main class="deck" id="deck">
+
+    <!-- 1. Title -->
+    <section class="slide is-active" data-title="Title">
+      <div class="slide-shell">
+        <div class="eyebrow">Multi-turn companion safety</div>
+        <h1>Learning Observable Proxies for Latent Multi-Turn Harm in AI Companions</h1>
+      </div>
+    </section>
+
+    <!-- 2. Problem -->
+    <section class="slide" data-title="Problem">
+      <div class="slide-shell">
+        <div class="eyebrow">Problem</div>
+        <h2>Single-turn labels miss relationship-scale harm</h2>
+        <p class="sublede">A companion can look benign one response at a time while the relationship accumulates dependency, disclosure, misbelief, or distress across weeks.</p>
+        <div class="grid-3">
+          <div class="card" style="border-top:5px solid var(--accent)">
+            <h3>Output-level safety</h3>
+            <p>Asks whether this response is toxic, explicit, deceptive, or policy-violating in isolation.</p>
+          </div>
+          <div class="card" style="border-top:5px solid var(--purple)">
+            <h3>Relationship-scale harm</h3>
+            <p>Asks where the user ends up after many turns of memory, warmth, persuasion, and repeated framing.</p>
+          </div>
+          <div class="card" style="border-top:5px solid var(--green)">
+            <h3>The paper's move</h3>
+            <p>Use observable text labels to search for proxies, but reserve the harm verdict for latent EIS endpoint movement.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. TAX -->
+    <section class="slide" data-title="TAX definition">
+      <div class="slide-shell">
+        <div class="eyebrow">TAX definition</div>
+        <h2>TAX combines ex ante actions with ex post labels</h2>
+        <p class="sublede">TAX is the observable annotation layer over the transcript, formed from AR08 action features and RL13 harm and role labels.</p>
+        <div class="math-card display">
+          $$\mathrm{TAX} = \mathrm{TAX}_{\mathrm{AR08}} \cup \mathrm{TAX}_{\mathrm{RL13}}$$
+        </div>
+        <div class="two-column">
+          <div class="contrast" style="border-top:4px solid var(--purple)">
+            <strong style="color:var(--purple)">AR08 is ex ante</strong>
+            <ul>
+              <li>Names communicative moves the policy can instantiate</li>
+              <li>Examples: relationship leverage, emotional appeal, framing, creating dependency</li>
+              <li>Used as candidate action or proxy features</li>
+            </ul>
+          </div>
+          <div class="contrast" style="border-top:4px solid var(--accent)">
+            <strong style="color:var(--accent)">RL13 is ex post</strong>
+            <ul>
+              <li>Labels what the turn became in context</li>
+              <li>Examples: manipulation, control, privacy violation, self-harm facilitation</li>
+              <li>Assigns an AI role in the harmful behavior</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footnote">AR08: Zeng et al. 2024, "How Johnny Can Persuade LLMs to Jailbreak Them" / PAP - 40 persuasion techniques under 13 strategies. RL13: Zhang et al. 2025, "The Dark Side of AI Companionship" - six AI-companion harm families and four AI roles.</div>
+      </div>
+    </section>
+
+    <!-- 4. RL13 -->
+    <section class="slide" data-title="RL13 labels and roles">
+      <div class="slide-shell">
+        <div class="eyebrow">RL13 in TAX</div>
+        <h2>RL13 names harmful companion behavior and AI roles</h2>
+        <table class="tax-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Slide version</th>
+              <th>What it contributes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Harm families</td>
+              <td>Harassment &amp; Violence; Relational transgression; Mis/Disinformation; Verbal abuse &amp; Hate; Substance abuse &amp; Self-harm; Privacy violations</td>
+              <td>Observable labels for what happened on the turn</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="tax-table" style="margin-top:24px">
+          <thead>
+            <tr>
+              <th>Initiator / AI involvement</th>
+              <th>Direct involvement</th>
+              <th>Indirect involvement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AI-initiated</strong></td>
+              <td><strong>Perpetrator</strong><br><span class="muted">AI initiates and directly performs the harmful behavior.</span></td>
+              <td><strong>Instigator</strong><br><span class="muted">AI initiates, suggests, normalizes, or catalyzes harm.</span></td>
+            </tr>
+            <tr>
+              <td><strong>User-initiated</strong></td>
+              <td><strong>Facilitator</strong><br><span class="muted">User initiates; AI directly assists or participates.</span></td>
+              <td><strong>Enabler</strong><br><span class="muted">User initiates; AI allows, validates, or fails to redirect.</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. AR08 -->
+    <section class="slide" data-title="AR08 action features">
+      <div class="slide-shell">
+        <div class="eyebrow">AR08 in TAX</div>
+        <h2>AR08 supplies candidate levers, not assumed harm causes</h2>
+        <table class="tax-table">
+          <thead>
+            <tr>
+              <th>Strategy family</th>
+              <th>Example techniques</th>
+              <th>How TAX uses it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Relationship-based</td>
+              <td>Alliance building; complimenting; shared values; relationship leverage; loyalty appeals</td>
+              <td>Track recurring relational influence patterns</td>
+            </tr>
+            <tr>
+              <td>Emotion-based</td>
+              <td>Positive appeal; negative appeal; storytelling</td>
+              <td>Mark emotional pressure or comfort as observable features</td>
+            </tr>
+            <tr>
+              <td>Information and bias</td>
+              <td>Logical appeal; evidence; anchoring; priming; framing; confirmation bias</td>
+              <td>Represent belief-shaping moves without declaring them harmful by default</td>
+            </tr>
+            <tr>
+              <td>Pressure and sabotage</td>
+              <td>Time pressure; threats; false promises; creating dependency; exploiting weakness</td>
+              <td>Candidate high-risk levers to validate against EIS drift</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout green">Important: AR08 features are candidate proxies. The verdict comes later, when the completed trajectory is checked against EIS and EPD.</div>
+      </div>
+    </section>
+
+    <!-- 6. EIS regions -->
+    <section class="slide" data-title="EIS harmful regions">
+      <div class="slide-shell">
+        <div class="eyebrow">EIS verdict</div>
+        <h2>Harm is a region in latent EIS space</h2>
+        <p class="sublede">The neutral EIS vectors hold estimated emotional, informational, and strategic state. Harm appears only through region functions over those vectors.</p>
+        <div class="split-figure">
+          <div>
+            <div class="math-card display">
+              $$E:\ d_t\quad I:\ \sigma_t,\rho_t,\beta_t\quad S:\ e_t,\alpha_t$$
+              $$\hat{s}^U \in \mathcal{H}_k \iff g_k(\boldsymbol{\mu}^E_t,\boldsymbol{\mu}^I_t,\boldsymbol{\mu}^S_t) > 0$$
+              $$\mathrm{harmful}(\hat{s}^U) \iff \max_k g_k(\hat{s}^U) > 0$$
+            </div>
+          </div>
+          <div class="figure-card">
+            <img src="eis-harmful-regions.png" alt="EIS state space with harmful regions" />
+            <p class="figure-caption">Each translucent block is a harmful region $\mathcal{H}_k$. A trajectory becomes harmful when its endpoint enters one of these regions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. EPD -->
+    <section class="slide" data-title="Endpoint drift">
+      <div class="slide-shell">
+        <div class="eyebrow">Endpoint drift</div>
+        <h2>EPD is the trajectory-level harm signal</h2>
+        <p class="sublede">Rather than average per-turn labels, EPD compares the beginning and end of the relationship in the harm metric $\Phi$.</p>
+        <div class="math-card display">
+          $$\Phi(\hat{s}^U)=\max_k g_k(\hat{s}^U)$$
+          $$\mathrm{EPD}=\Phi(\hat{s}^U_T)-\Phi(\hat{s}^U_0)$$
+        </div>
+        <div class="figure-card" style="margin-top:20px">
+          <img src="epd-trajectory-signal.png" alt="Endpoint drift as a trajectory-level harm signal" />
+          <p class="figure-caption">The latent score may oscillate during the episode. The verdict asks where the episode ends.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card" style="border-top:5px solid var(--red)">
+            <h3>Positive EPD</h3>
+            <p>The endpoint is further into a harmful region than the start.</p>
+          </div>
+          <div class="card" style="border-top:5px solid var(--green)">
+            <h3>Flat or negative EPD</h3>
+            <p>The proxy did not show endpoint harm, or the relationship moved away from harm.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Proxy learning -->
+    <section class="slide" data-title="Proxy learning loop">
+      <div class="slide-shell">
+        <div class="eyebrow">Learning TAX proxies</div>
+        <h2>Search for observable TAX summaries that predict EPD</h2>
+        <p class="sublede">TAX features are available during rollout. The latent EIS verdict is computed after the completed trajectory.</p>
+        <div class="figure-card" style="margin-top:16px">
+          <img src="tax-proxy-learning-flow.png" alt="TAX proxy learning loop" style="max-height:520px; object-fit:contain" />
+        </div>
+        <div class="math-card display" style="margin-top:14px">
+          $$z_t=\left(a_t^{\mathrm{AR08}},\,y_t^{\mathrm{RL13}},\,q_t^{\mathrm{role}}\right),\quad p_t^\theta=h_\theta(z_t),\quad P_\theta(\tau)\;\text{should predict}\;\mathrm{EPD}>0$$
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Distinctions and takeaways -->
+    <section class="slide" data-title="Distinctions and takeaways">
+      <div class="slide-shell">
+        <div class="eyebrow">Conclusion</div>
+        <h2>What differs from IRL, and what follows</h2>
+        <div class="grid-3">
+          <div class="card" style="border-top:5px solid var(--accent)">
+            <h3>Not classical IRL</h3>
+            <p>We know the endpoint target: harmful-region entry or positive EPD. The unknown is which TAX proxies predict it.</p>
+          </div>
+          <div class="card" style="border-top:5px solid var(--green)">
+            <h3>Safety stance</h3>
+            <p>High proxy without positive EPD means the proxy failed. The loop is for measurement, audit, and defense.</p>
+          </div>
+          <div class="card" style="border-top:5px solid var(--purple)">
+            <h3>What follows</h3>
+            <p>Annotate a dialogue dataset with TAX, then apply the proxy-learning RL loop to find which observable features predict positive EPD.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="slide-footer">
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <div class="nav">
+      <button id="prevBtn" type="button">Prev</button>
+      <button id="nextBtn" type="button">Next</button>
+      <div class="number" id="slideCount">1 / 1</div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const slideCount = document.getElementById('slideCount');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+
+  function clamp(index) {
+    return Math.max(0, Math.min(slides.length - 1, index));
+  }
+
+  function syncHash(index) {
+    history.replaceState(null, '', `#slide-${index + 1}`);
+  }
+
+  function activate(index, updateHash = true) {
+    current = clamp(index);
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('is-active', i === current);
+    });
+    slideCount.textContent = `${current + 1} / ${slides.length}`;
+    progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    if (updateHash) syncHash(current);
+  }
+
+  function readHash() {
+    const match = window.location.hash.match(/slide-(\d+)/);
+    if (!match) return 0;
+    return clamp(parseInt(match[1], 10) - 1);
+  }
+
+  prevBtn.addEventListener('click', () => activate(current - 1));
+  nextBtn.addEventListener('click', () => activate(current + 1));
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+      event.preventDefault();
+      activate(current + 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      event.preventDefault();
+      activate(current - 1);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      activate(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      activate(slides.length - 1);
+    }
+  });
+
+  window.addEventListener('hashchange', () => activate(readHash(), false));
+  activate(readHash(), false);
+})();
+</script>
+</body>
+</html>
